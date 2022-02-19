@@ -1,2 +1,2 @@
 # Clash-Of-Clans
-Clash Of Clans clone
+Clash Of Clans clone tezt
