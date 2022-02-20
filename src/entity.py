@@ -40,9 +40,25 @@ class Entity:
     # Customized representation of the object
     def __repr__(self):
         return f"{self.name}"
+    
+class King(Entity):
+    def __init__(self, name: str, max_health, damage, speed, axe_damage, axe_area):
+        # Inherit
+        super().__init__(name, max_health, damage, speed)
+        
+        # Validate
+        assert axe_damage > 0, f"Damage {axe_damage} must be > 0"
+        assert axe_area > 0, f"Fire Rate {axe_area} must be > 0"
+        
+        # Initialize
+        self.axe_damage = axe_damage
+        self.axe_area = axe_area
+        
+    def use_leviathan_axe(self):
+        print("King used Leviathan Axe")
         
 # Instances
-King = Entity("King", KING_HEALTH, KING_DAMAGE, KING_SPEED)
+King = King("King", KING_HEALTH, KING_DAMAGE, KING_SPEED, KING_AXE_DAMAGE, KING_AXE_AREA)
 
 Barbarian = []
 for i in range(20):
