@@ -116,6 +116,8 @@ while(not game_over):
     
     # Display
     os.system("clear")
+    
+    print("hello")
     print_canvas()
     
     print(th.health)
