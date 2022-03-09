@@ -1,14 +1,12 @@
 from .variables import *
-
+         
 def print_canvas():
+    # Use buffer to avoid flickering
+    BUFFER = ""
     for i in range(CANVAS_HEIGHT):
-        if(not LINES[i]):
-            # continue
-            pass
-        for j in range(CANVAS_WIDTH):
-            # Print([CANVAS[i][j]]*1)
-            print(CANVAS[i][j], end="")
-        print()
+        BUFFER += "".join(CANVAS[i])
+        BUFFER += "\n"
+    print(BUFFER)
         
 def set_border():
     # Horizontal borders

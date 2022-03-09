@@ -3,15 +3,17 @@ from .variables import *
 class Building:
     all = []
     
-    def __init__(self, name: str, color, max_health):
+    def __init__(self, name: str, color, size, max_health):
         # Validate
         assert max_health > 0, f"Health {max_health} must be > 0"
         
         # Initialize
         self.name = name
         self.color = color
+        self.size = size
         self.max_health = max_health
         self.health = max_health
+        self.alive = True
         
         # Position
         self.X = 0
@@ -28,17 +30,21 @@ class Building:
         self.X = posX
         self.Y = posY
                 
+        char = (self.color + "█") if self.alive else " "  
         for y in range(posY, posY + sizeY):
             for x in range(posX*2, posX*2 + sizeX*2):
-                CANVAS[y][x] = self.color + "█"
+                CANVAS[y][x] = char
+                
+    def __repr__(self):
+        return f"{self.name}"
 
 # Cannon: Inherits from building
 class Cannon(Building):
     all = []
     
-    def __init__(self, name: str, color, max_health, damage, fire_rate, span):
+    def __init__(self, name: str, color, size, max_health, damage, fire_rate, span):
         # Inherit
-        super().__init__(name, color, max_health)
+        super().__init__(name, color, size, max_health)
         
         # Validate
         assert damage > 0, f"Damage {damage} must be > 0"
@@ -53,3 +59,6 @@ class Cannon(Building):
 
 class Gold_Mine(Building):
     pass
+
+# Instances
+th = Building("Townhall", TOWNHALL_COLOR, TOWNHALL_SIZE, TOWNHALL_HEALTH)
