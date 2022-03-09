@@ -1,3 +1,10 @@
+import os
+import time
+import random
+import colorama
+import numpy as np
+from colorama import Fore, Back, Style
+
 # King
 KING_HEALTH = 7500
 KING_DAMAGE = 100
@@ -6,29 +13,49 @@ KING_AXE_DAMAGE = 40
 KING_AXE_AREA = 5
 
 # Barbarian
+BARBARIAN_COLOR = Fore.YELLOW 
 BARBARIAN_HEALTH = 100
 BARBARIAN_DAMAGE = 10
 BARBARIAN_SPEED = 4
+MAX_BARBARIANS = 10
 
 # Townhall
 TOWNHALL_SIZE = (4, 3)
-TOWNHALL_1_HEALTH = 1000
-TOWNHALL_2_HEALTH = 1500
-TOWNHALL_3_HEALTH = 2000
-TOWNHALL_4_HEALTH = 2500
+TOWNHALL_COLOR = Fore.CYAN
+TOWNHALL_HEALTH = 1000
 
 # Huts
-HUT_SIZE = (2, 2)
+HUT_SIZE = (1, 1)
+HUT_COLOR = Fore.GREEN
+HUT_HEALTH = 50
 NUM_HUTS = 5
 
 # Cannons
 NUM_CANNONS = 2
-CANNON_SIZE = (3, 3)
+CANNON_SIZE = (2, 2)
 CANNON_HEALTH = 80
+CANNON_COLOR = Fore.RED
 CANNON_DAMAGE = 8
 CANNON_FIRE_RATE = 0.5
+CANNON_SPAN = 8
+
+# Canvas
+CANVAS_WIDTH = 114
+CANVAS_HEIGHT = 34
+CENTER_X = 57
+CENTER_Y = 17
+MOVE_CURSOR = "\033[%d;%dH"
+Print = lambda content: print(*content, sep='', end='', flush=True)
+LINES = [True for _ in range(CANVAS_HEIGHT)]
+CANVAS = [[" "]*CANVAS_WIDTH for _ in range(CANVAS_HEIGHT)]
 
 # Spawing points
-SPAWN_POINT_A = (10, 20)
-SPAWN_POINT_B = (-5, 12)
-SPAWN_POINT_C = (16, -10)
+NUM_SPAWN_POINTS = 3
+SPAWN_POINT_COLOR = Fore.WHITE
+SPAWN_POINT_A = (1, 1)
+SPAWN_POINT_B = (CANVAS_WIDTH - 4, 1)
+SPAWN_POINT_C = (1, CANVAS_HEIGHT - 2)
+SPAWN_POINT = [SPAWN_POINT_A, SPAWN_POINT_B, SPAWN_POINT_C]
+
+game_over = False
+Barbarian = []

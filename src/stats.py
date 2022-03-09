@@ -1,10 +1,13 @@
-from entity import *
-from building import *
+from .entity import *
+from .building import *
 
 def building_stats():
-    print(f"{townhall.name} health = {townhall.health}")
-    print(f"{archerTower.name} health = {archerTower.health}")
-    
+    for building in Building.all:
+        print(f"*** {building.name} ***")
+        print(f"Health: {building.max_health}")
+        # print(f"Damage: {cannon.damage}")
+        print()
+        
 def entity_stats():
     for entity in Entity.all:
         print(f"*** {entity.name} ***")
