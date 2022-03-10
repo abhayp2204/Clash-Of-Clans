@@ -55,70 +55,40 @@ class Entity:
                 CANVAS[y][x] = char
 
     def move(self, target):
-            
-        if not self.alive:
-            return False
-        # if self.clearing_path:
-        #     return True
-        
-        def clear():
+        def erase():
             CANVAS[self.Y][self.X] = " "
             CANVAS[self.Y][self.X + 1] = " "
-            
-        def boolean_to_sign(x):
-            return int(2*(x - 0.5))
-            
-        def move_horizontal(sign):
-            sign = boolean_to_sign(sign)
-            ch = CANVAS[self.Y][self.X + sign*2 + 1]
-            if(ch != " " and ch != BARBARIAN_COLOR + "█"):
-                if(CANVAS[self.Y][self.X + sign*2 + 1] == Fore.WHITE + "█"):
-                    self.clearing_path = True
-                    for w in Building.walls:
-                        if(self.Y == w.Y and self.X + sign*2 == w.X*2):
-                            self.target_wall = w
-                            break
-                return False
-            
-            self.clearing_path = False
-            self.target_wall = th
-            
-            clear()
-            self.X += sign * 2
+        def redraw():
             CANVAS[self.Y][self.X] = self.color + "█"
             CANVAS[self.Y][self.X + 1] = self.color + "█"
-            return True
+        def move_up():
+            erase()
+            self.Y -= 1
+            redraw()
+        def move_down():
+            erase()
+            self.Y += 1
+            redraw()
+        def move_left():
+            erase()
+            self.X -= 2
+            redraw()
+        def move_right():
+            erase()
+            self.X += 2
+            redraw()
             
-        def move_vertical(sign):
-            sign = boolean_to_sign(sign)
-            ch = CANVAS[self.Y + sign][self.X]
-            if(ch != " " and ch != BARBARIAN_COLOR + "█"):
-                if(CANVAS[self.Y + sign][self.X] == Fore.WHITE + "█"):
-                    self.clearing_path = True
-                    for w in Building.walls:
-                        if(self.Y + sign == w.Y and self.X == w.X*2):
-                            self.target_wall = w
-                            break
-                return False
+        if(target.X*2 > self.X):
+            move_right()
+        elif(target.X*2 < self.X):
+            move_left()
             
-            self.clearing_path = False
-            self.target_wall = th
-            
-            clear()
-            self.Y += sign
-            CANVAS[self.Y][self.X] = self.color + "█"
-            CANVAS[self.Y][self.X + 1] = self.color + "█"
-            return True
-            
-        # flag1 = True if (target.X*2 == self.X) else move_horizontal(target.X*2 > self.X)
-        # flag2 = True if (target.Y == self.Y) else move_vertical(target.Y > self.Y)
-        flag1 = move_horizontal(target.X*2 > self.X)
-        flag2 = move_vertical(target.Y > self.Y)
+        if(target.Y > self.Y):
+            move_down()
+        elif(target.Y < self.Y):
+            move_up()
         
-        if(self.clearing_path):
-            return True
-        
-        return not (flag1 and flag2)
+        return True
 
     def attack(self, target):
         if(not target.alive):
