@@ -2,7 +2,18 @@ import os
 import sys
 
 from .variables import *
-import random
+
+def exit_game():
+    show_cursor()
+    os.system("stty echo")
+    print(message)
+
+def distance(troop, building):
+    dx = 2*building.X - troop.X
+    dy = building.Y - troop.Y
+    
+    d2 = dx**2 + dy**2
+    return math.sqrt(d2)
 
 def hide_cursor():
     if os.name == 'nt':

@@ -1,4 +1,3 @@
-from colorama import Back
 from .variables import *
 from .building import *
 from .util import *
@@ -6,13 +5,14 @@ from .util import *
 class Entity:
     # List of all entities
     all = []
+    Barbarians = []
     
     # Class attributes
     damage_rate = 1.0
     health_rate = 1.5
         
     # __init__ is a magic method that gets called whenever an instance is created
-    def __init__(self, name: str, color, max_health=100, damage=10, speed=1):    
+    def __init__(self, name: str, color, size, max_health=100, damage=10, speed=1):    
         # Validate
         assert max_health > 0, f"Health {max_health} must be > 0"
         assert damage >= 0, f"Damage {damage} must be >= 0"
@@ -21,35 +21,45 @@ class Entity:
         # Initialize
         self.name = name
         self.color = color
+        self.size = size
         self.max_health = max_health
         self.health = max_health
         self.damage = damage
         self.speed = speed
         self.alive = True
+        self.clearing_path = False
+        self.target_wall = th
         
         self.move_time = 0
         self.attack_time = 0
+        self.message = ""
         
         # Add to list of entities
         Entity.all.append(self)
+        
+        if(name == "Barbarian"):
+            Entity.Barbarians.append(self)
 
-    def draw(self, posX, posY, sizeX, sizeY): 
-        if(2*(posX + sizeX) >= CANVAS_WIDTH):
+    def draw(self, posX, posY): 
+        if(2*(posX + self.size[0]) >= CANVAS_WIDTH):
             return
-        if(posY + sizeY >= CANVAS_HEIGHT):
+        if(posY + self.size[1] >= CANVAS_HEIGHT):
             return
         
         self.X = posX*2
         self.Y = posY
                 
         char = (self.color + "█") if self.alive else " "
-        for y in range(posY, posY + sizeY):
-            for x in range(posX*2, posX*2 + sizeX*2):
+        for y in range(posY, posY + self.size[1]):
+            for x in range(posX*2, posX*2 + self.size[0]*2):
                 CANVAS[y][x] = char
 
     def move(self, target):
+            
         if not self.alive:
-            return
+            return False
+        # if self.clearing_path:
+        #     return True
         
         def clear():
             CANVAS[self.Y][self.X] = " "
@@ -60,8 +70,18 @@ class Entity:
             
         def move_horizontal(sign):
             sign = boolean_to_sign(sign)
-            if(CANVAS[self.Y][self.X + sign*2 + 1] != " "):
+            ch = CANVAS[self.Y][self.X + sign*2 + 1]
+            if(ch != " " and ch != BARBARIAN_COLOR + "█"):
+                if(CANVAS[self.Y][self.X + sign*2 + 1] == Fore.WHITE + "█"):
+                    self.clearing_path = True
+                    for w in Building.walls:
+                        if(self.Y == w.Y and self.X + sign*2 == w.X*2):
+                            self.target_wall = w
+                            break
                 return False
+            
+            self.clearing_path = False
+            self.target_wall = th
             
             clear()
             self.X += sign * 2
@@ -71,8 +91,18 @@ class Entity:
             
         def move_vertical(sign):
             sign = boolean_to_sign(sign)
-            if(CANVAS[self.Y + sign][self.X] != " "):
+            ch = CANVAS[self.Y + sign][self.X]
+            if(ch != " " and ch != BARBARIAN_COLOR + "█"):
+                if(CANVAS[self.Y + sign][self.X] == Fore.WHITE + "█"):
+                    self.clearing_path = True
+                    for w in Building.walls:
+                        if(self.Y + sign == w.Y and self.X == w.X*2):
+                            self.target_wall = w
+                            break
                 return False
+            
+            self.clearing_path = False
+            self.target_wall = th
             
             clear()
             self.Y += sign
@@ -80,17 +110,19 @@ class Entity:
             CANVAS[self.Y][self.X + 1] = self.color + "█"
             return True
             
+        # flag1 = True if (target.X*2 == self.X) else move_horizontal(target.X*2 > self.X)
+        # flag2 = True if (target.Y == self.Y) else move_vertical(target.Y > self.Y)
         flag1 = move_horizontal(target.X*2 > self.X)
         flag2 = move_vertical(target.Y > self.Y)
+        
+        if(self.clearing_path):
+            return True
         
         return not (flag1 and flag2)
 
     def attack(self, target):
         if(not target.alive):
             return
-        
-        CANVAS[self.Y][self.X] = self.color + "█"
-        CANVAS[self.Y][self.X + 1] = self.color + "█"
         
         target.health -= self.damage
             
@@ -109,9 +141,9 @@ class Entity:
         return f"{self.name}"
     
 class King(Entity):
-    def __init__(self, name: str, color, max_health, damage, speed, axe_damage, axe_area):
+    def __init__(self, name: str, color, size, max_health, damage, speed, axe_damage, axe_area):
         # Inherit
-        super().__init__(name, color, max_health, damage, speed)
+        super().__init__(name, color, size, max_health, damage, speed)
         
         # Validate
         assert axe_damage > 0, f"Damage {axe_damage} must be > 0"
@@ -241,6 +273,7 @@ class King(Entity):
     
 K = King("Barbarian King",
          KING_COLOR,
+         KING_SIZE,
          KING_HEALTH,
          KING_DAMAGE,
          KING_SPEED,

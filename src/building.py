@@ -2,6 +2,7 @@ from .variables import *
 
 class Building:
     all = []
+    walls = []
     
     def __init__(self, name: str, color, size, max_health):
         # Validate
@@ -19,20 +20,23 @@ class Building:
         self.X = 0
         self.Y = 0
         
+        if(name == "Wall"):
+            Building.walls.append(self)
+            return
         Building.all.append(self)
         
-    def draw(self, posX, posY, sizeX, sizeY): 
-        if(2*(posX + sizeX) >= CANVAS_WIDTH):
+    def draw(self, posX, posY): 
+        if(2*(posX + self.size[0]) >= CANVAS_WIDTH):
             return
-        if(posY + sizeY >= CANVAS_HEIGHT):
+        if(posY + self.size[1] >= CANVAS_HEIGHT):
             return
         
         self.X = posX
         self.Y = posY
                 
         char = (self.color + "█") if self.alive else " "  
-        for y in range(posY, posY + sizeY):
-            for x in range(posX*2, posX*2 + sizeX*2):
+        for y in range(posY, posY + self.size[1]):
+            for x in range(posX*2, posX*2 + self.size[0]*2):
                 CANVAS[y][x] = char
                 
     def __repr__(self):
