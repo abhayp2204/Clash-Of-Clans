@@ -12,7 +12,7 @@ class Entity:
     health_rate = 1.5
         
     # __init__ is a magic method that gets called whenever an instance is created
-    def __init__(self, name: str, color, attack_color, max_health=100, damage=10, speed=1):    
+    def __init__(self, name: str, color, max_health=100, damage=10, speed=1):    
         # Validate
         assert max_health > 0, f"Health {max_health} must be > 0"
         assert damage >= 0, f"Damage {damage} must be >= 0"
@@ -21,11 +21,11 @@ class Entity:
         # Initialize
         self.name = name
         self.color = color
-        self.attack_color = attack_color
         self.max_health = max_health
         self.health = max_health
         self.damage = damage
         self.speed = speed
+        self.alive = True
         
         self.move_time = 0
         self.attack_time = 0
@@ -42,12 +42,15 @@ class Entity:
         self.X = posX*2
         self.Y = posY
                 
+        char = (self.color + "█") if self.alive else " "
         for y in range(posY, posY + sizeY):
             for x in range(posX*2, posX*2 + sizeX*2):
-                CANVAS[y][x] = self.color + "*"
-                CANVAS[y][x] = Back.RED + "-" + Back.RESET
+                CANVAS[y][x] = char
 
     def move(self, target):
+        if not self.alive:
+            return
+        
         def clear():
             CANVAS[self.Y][self.X] = " "
             CANVAS[self.Y][self.X + 1] = " "
@@ -86,9 +89,8 @@ class Entity:
         if(not target.alive):
             return
         
-        print(f"Entity attacks with damage {self.damage}")
-        CANVAS[self.Y][self.X] = self.attack_color + "█"
-        CANVAS[self.Y][self.X + 1] = self.attack_color + "█"
+        CANVAS[self.Y][self.X] = self.color + "█"
+        CANVAS[self.Y][self.X + 1] = self.color + "█"
         
         target.health -= self.damage
             
@@ -116,11 +118,15 @@ class King(Entity):
         assert axe_area > 0, f"Fire Rate {axe_area} must be > 0"
         
         # Initialize
+        self.health = max_health
         self.axe_damage = axe_damage
         self.axe_area = axe_area
         self.direction = EAST
         
     def move_up(self):
+        if not self.alive:
+            return
+        
         if(CANVAS[self.Y - 1][self.X] != " "):
             return False
         
@@ -137,6 +143,9 @@ class King(Entity):
         return True
         
     def move_left(self):
+        if not self.alive:
+            return
+        
         if(CANVAS[self.Y][self.X - 2 + 1] != " "):
             return False
         
@@ -153,6 +162,9 @@ class King(Entity):
         return True
         
     def move_down(self):
+        if not self.alive:
+            return
+        
         if(CANVAS[self.Y + 1][self.X] != " "):
             return False
         
@@ -169,6 +181,9 @@ class King(Entity):
         return True
         
     def move_right(self):
+        if not self.alive:
+            return
+        
         if(CANVAS[self.Y][self.X + 2 + 1] != " "):
             return False
         

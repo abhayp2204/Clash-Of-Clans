@@ -38,7 +38,7 @@ class Building:
     def __repr__(self):
         return f"{self.name}"
 
-# Cannon: Inherits from building
+# Cannon: Inherits from Building
 class Cannon(Building):
     all = []
     
@@ -54,11 +54,32 @@ class Cannon(Building):
         self.damage = damage
         self.fire_rate = fire_rate
         self.span = span
+        self.fire_time = 0
+        self.targets = []
         
         Cannon.all.append(self)
+        
+    def fire(self, target):
+        if(target.alive):
+            target.health -= self.damage
+        if(target.health < 0):
+            target.health = 0
+            
+    def in_range(self, troop):
+        if troop in self.targets:
+            return
+        
+        within_x_span = (troop.X > (self.X - self.size[0] - self.span)*2) and (troop.X < (self.X + self.size[0] + self.span)*2)
+        within_y_span = troop.Y > (self.Y - self.size[1] - self.span) and troop.Y < (self.Y + self.size[1] + self.span)
+        if(within_x_span and within_y_span):
+            self.targets.append(troop)
+            troop.hitlist = True
 
 class Gold_Mine(Building):
     pass
 
 # Instances
-th = Building("Townhall", TOWNHALL_COLOR, TOWNHALL_SIZE, TOWNHALL_HEALTH)
+th = Building("Townhall",
+               TOWNHALL_COLOR,
+               TOWNHALL_SIZE,
+               TOWNHALL_HEALTH)

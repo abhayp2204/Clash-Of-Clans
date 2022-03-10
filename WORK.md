@@ -4,6 +4,7 @@
 `Cannon` class inherits from `Building` class.
 
 ## Polymorphism
+King.draw() overrides Entity.draw()
 
 ## Encapsulation
 Classes and Objects were used.
