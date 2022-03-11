@@ -28,7 +28,6 @@ class Entity:
         self.speed = speed
         self.alive = True
         self.target_wall = th
-        self.clearing_path = False
         
         self.move_time = 0
         self.attack_time = 0
@@ -61,7 +60,6 @@ class Entity:
         def redraw():
             CANVAS[self.Y][self.X] = self.color + "█"
             CANVAS[self.Y][self.X + 1] = self.color + "█"
-            
         def move_up():
             erase()
             self.Y -= 1
@@ -78,73 +76,61 @@ class Entity:
             erase()
             self.X += 2
             redraw()
-        
             
         if(not self.target_wall.alive):
-            self.clearing_path = False
+            self.target_wall = th
+        if self.target_wall != th:
+            return
+        self.target_wall = th
             
         if(target.X*2 > self.X):
             ch = CANVAS[self.Y][self.X + 2]
             if(ch == " " or ch == BARBARIAN_COLOR + "█"):
                 move_right()
+            elif(ch == WALL_COLOR + "█"):
+                for w in Building.walls:
+                    if(self.Y == w.Y and self.X + 2 == w.X*2):
+                        self.target_wall = w
+                        # w.health = -1
+                        return
+                
         elif(target.X*2 < self.X):
             ch = CANVAS[self.Y][self.X - 2]
             if(ch == " " or ch == BARBARIAN_COLOR + "█"):
                 move_left()
-                
+            elif(ch == WALL_COLOR + "█"):
+                for w in Building.walls:
+                    if(self.Y == w.Y and self.X - 2 == w.X*2):
+                        self.target_wall = w
+                        return
+            
         if(target.Y > self.Y):
             ch = CANVAS[self.Y + 1][self.X]
             if(ch == " " or ch == BARBARIAN_COLOR + "█"):
                 move_down()
+            elif(ch == WALL_COLOR + "█"):
+                for w in Building.walls:
+                    if(self.Y + 1 == w.Y and self.X == w.X*2):
+                        self.target_wall = w
+                        return
+                    
         elif(target.Y < self.Y):
             ch = CANVAS[self.Y - 1][self.X]
             if(ch == " " or ch == BARBARIAN_COLOR + "█"):
                 move_up()
-                
-        if(target.X*2 > self.X): 
-            if(ch == WALL_COLOR + "█"):
-                for w in Building.walls:
-                    if(self.Y == w.Y and self.X + 2 == w.X*2):
-                        self.target_wall = w
-                        self.clearing_path = True
-                        # w.health = -1
-                        return
-        elif(target.X*2 < self.X): 
-            if(ch == WALL_COLOR + "█"):
-                for w in Building.walls:
-                    if(self.Y == w.Y and self.X - 2 == w.X*2):
-                        self.target_wall = w
-                        self.clearing_path = True
-                        return
-            
-        
-        if(target.Y > self.Y):
-            if(ch == WALL_COLOR + "█"):
-                for w in Building.walls:
-                    if(self.Y + 1 == w.Y and self.X == w.X*2):
-                        self.target_wall = w
-                        self.clearing_path = True
-                        return
-        elif(target.Y < self.Y):
-            if(ch == WALL_COLOR + "█"):
+            elif(ch == WALL_COLOR + "█"):
                 for w in Building.walls:
                     if(self.Y - 1 == w.Y and self.X== w.X*2):
                         self.target_wall = w
-                        self.clearing_path = True
                         return
     
     def within_attack_range(self, target):
-        dx = int((target.X - self.X/2))
-        dy = (target.Y - self.Y)
-        
-        K.message = "dy =" + str(dy)
+        dx = int(abs(target.X - self.X/2))
+        dy = abs(target.Y - self.Y)
         
         # Far
-        if(dx > 1 or dx < -target.size[0] or dy > 1 or dy < -target.size[1]):
+        if(dx > 1 or dy > 1):
             return False
-        
-        dx = abs(dx)
-        dy = abs(dy)
         
         # Diagonal
         if(dx == 1 and dy == 1):
@@ -153,6 +139,9 @@ class Entity:
         return True
 
     def attack(self, target):
+        # if(not target.alive):
+        #     return
+        
         target.health -= self.damage
             
     def apply_rage_spell(self):
@@ -188,7 +177,6 @@ class King(Entity):
         if not self.alive:
             return
         
-        self.direction = NORTH
         if(CANVAS[self.Y - 1][self.X] != " "):
             return False
         
@@ -201,13 +189,13 @@ class King(Entity):
         CANVAS[self.Y][self.X] = self.color + "█"
         CANVAS[self.Y][self.X + 1] = self.color + "█"
         
+        self.direction = NORTH
         return True
         
     def move_left(self):
         if not self.alive:
             return
         
-        self.direction = WEST
         if(CANVAS[self.Y][self.X - 2 + 1] != " "):
             return False
         
@@ -220,13 +208,13 @@ class King(Entity):
         CANVAS[self.Y][self.X] = self.color + "█"
         CANVAS[self.Y][self.X + 1] = self.color + "█"
         
+        self.direction = WEST
         return True
         
     def move_down(self):
         if not self.alive:
             return
         
-        self.direction = SOUTH
         if(CANVAS[self.Y + 1][self.X] != " "):
             return False
         
@@ -239,13 +227,13 @@ class King(Entity):
         CANVAS[self.Y][self.X] = self.color + "█"
         CANVAS[self.Y][self.X + 1] = self.color + "█"
         
+        self.direction = SOUTH
         return True
         
     def move_right(self):
         if not self.alive:
             return
         
-        self.direction = EAST
         if(CANVAS[self.Y][self.X + 2 + 1] != " "):
             return False
         
@@ -258,6 +246,7 @@ class King(Entity):
         CANVAS[self.Y][self.X] = self.color + "█"
         CANVAS[self.Y][self.X + 1] = self.color + "█"
         
+        self.direction = EAST
         return True
         
     def attack(self):
@@ -269,11 +258,6 @@ class King(Entity):
                         continue
                     if(self.Y == building.Y + building.size[1]):
                         building.health -= KING_DAMAGE
-                for w in Building.walls:
-                    if not(self.X >= w.X*2 and self.X < (w.X + w.size[0])*2):
-                        continue
-                    if(self.Y == w.Y + w.size[1]):
-                        w.health -= KING_DAMAGE
 
         if(self.direction == SOUTH):
             ch = CANVAS[self.Y + 1][self.X]
@@ -283,11 +267,6 @@ class King(Entity):
                         continue
                     if(self.Y + 1 == building.Y):
                         building.health -= KING_DAMAGE
-                for w in Building.walls:
-                    if not(self.X >= w.X*2 and self.X < (w.X + w.size[0])*2):
-                        continue
-                    if(self.Y + 1 == w.Y):
-                        w.health -= KING_DAMAGE
                         
         if(self.direction == EAST):
             ch = CANVAS[self.Y][self.X + 2]
@@ -297,25 +276,15 @@ class King(Entity):
                         continue
                     if(self.X + 2 == building.X*2):
                         building.health -= KING_DAMAGE
-                for w in Building.walls:
-                    if not(self.Y == w.Y):
-                        continue
-                    if(self.X + 2 == w.X*2):
-                        w.health -= KING_DAMAGE
                         
         if(self.direction == WEST):
             ch = CANVAS[self.Y][self.X - 2]
             if(ch != " "):
                 for building in Building.all:
-                    if not(self.Y == w.Y):
+                    if not(self.Y >= building.Y and self.Y < (building.Y + building.size[1])*2):
                         continue
                     if(self.X == building.X*2 + building.size[0]*2):
                         building.health -= KING_DAMAGE
-                for w in Building.walls:
-                    if not(self.Y >= w.Y and self.Y < (w.Y + w.size[1])*2):
-                        continue
-                    if(self.X == w.X*2 + w.size[0]*2):
-                        w.health -= KING_DAMAGE
                 
     def use_leviathan_axe(self):
         print("King used Leviathan Axe")

@@ -21,7 +21,6 @@ def hud(timesteps):
 def footer():
     pass
     print("Message = ", K.message)
-    print(Building.all)
          
 def print_canvas():
     # Use buffer to avoid flickering

@@ -11,26 +11,26 @@ def get_target(B):
         if(d < min):
             min = d
             target = b
-    K.message = target
     return target
 
 def handle_barbarians(timesteps):
     for B in Entity.Barbarians:
+        
         # Ignore dead barbarians
         if not B.alive:
             continue
         
         target = get_target(B)
-                
-        if(B.target_wall.name != "Townhall"):
+        if(B.target_wall != th and B.target_wall.alive):
             target = B.target_wall
+            
+        attacking = B.within_attack_range(target)
         
         if(timesteps == B.move_time):
             continue
         
         B.move_time = timesteps
-        attacking = B.move(target)
-        
+        B.move(target)
         
         # Re-color
         CANVAS[B.Y][B.X] = B.color + "█"
