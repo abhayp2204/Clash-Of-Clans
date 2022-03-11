@@ -318,7 +318,9 @@ class King(Entity):
                         w.health -= KING_DAMAGE
                 
     def use_leviathan_axe(self):
-        print("King used Leviathan Axe")
+        for b in Building.all:
+            if(abs(b.X*2 - self.X) <= KING_AXE_AREA and abs(b.Y - self.Y) <= KING_AXE_AREA):
+                b.health -= 10000
     
 K = King("Barbarian King",
          KING_COLOR,
