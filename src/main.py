@@ -28,6 +28,8 @@ def handle_barbarians(timesteps):
         
         if(timesteps == B.move_time):
             continue
+        if(timesteps % int(6/B.speed) != 0):
+            continue
         
         B.move_time = timesteps
         B.move(target)
@@ -37,7 +39,7 @@ def handle_barbarians(timesteps):
         CANVAS[B.Y][B.X + 1] = B.color + "█"
         
         # Attempt to attack once every three timesteps
-        if(timesteps % 3 == 0 and attacking and timesteps != B.attack_time):
+        if(attacking and timesteps != B.attack_time):
             B.attack_time = timesteps
             B.attack(target)
             
@@ -62,6 +64,12 @@ def handle_cannons(timesteps):
                 
             if C.targets:
                 C.fire(C.targets[0])
+   
+def handle_buildings(timesteps):
+    for b in Building.all:
+        perc = 100*(b.health/b.max_health)
+        if(perc < 50):
+            b.draw(b.X, b.Y)
                 
 def grim_reaper():
     # Buildings
@@ -74,17 +82,14 @@ def grim_reaper():
         i += 1
         
     # Barbarians
-    for B in Entity.Barbarians:
+    i = 0
+    for B in Entity.all:
         if(B.alive and B.health <= 0):
             B.alive = False
+            Entity.all.pop(i)
             CANVAS[B.Y][B.X] = " "
             CANVAS[B.Y][B.X + 1] = " "
-        
-    # King
-    if(K.alive and K.health <= 0):
-        K.alive = False
-        CANVAS[K.Y][K.X] = " "
-        CANVAS[K.Y][K.X + 1] = " "
+        i += 1
         
     # Walls
     i = 0

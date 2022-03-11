@@ -307,7 +307,7 @@ class King(Entity):
             ch = CANVAS[self.Y][self.X - 2]
             if(ch != " "):
                 for building in Building.all:
-                    if not(self.Y == w.Y):
+                    if not(self.Y >= building.Y and self.Y < (building.Y + building.size[1])*2):
                         continue
                     if(self.X == building.X*2 + building.size[0]*2):
                         building.health -= KING_DAMAGE

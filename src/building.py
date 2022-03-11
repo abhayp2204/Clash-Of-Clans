@@ -37,7 +37,17 @@ class Building:
         char = (self.color + "█") if self.alive else " "  
         for y in range(posY, posY + self.size[1]):
             for x in range(posX*2, posX*2 + self.size[0]*2):
-                CANVAS[y][x] = char
+                CANVAS[y][x] = Fore.GREEN + "█"
+                if(self.name == "Wall"):
+                    CANVAS[y][x] = Fore.WHITE + "█"
+                    
+                perc = 100*(self.health/self.max_health)
+                if(perc < 50):
+                    CANVAS[y][x] = Fore.YELLOW + "█"
+                if(perc <= 20):
+                    CANVAS[y][x] = Fore.RED + "█"
+                if(perc <= 0):
+                    CANVAS[y][x] = " "
                 
     def __repr__(self):
         return f"{self.name}"

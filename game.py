@@ -19,18 +19,20 @@ message = ""
 BUFFER = ""
 timesteps = 0
 
-while (not game_over):
+while (True):
     # break
 
     key = input_to(getch)
-    input_handler(key)
+    input_handler(key, timesteps)
+    
+    # Rage spell wears off
+    if(timesteps > Rage.time + Rage.duration):
+        Rage.reset()
     
     handle_barbarians(timesteps)
     handle_cannons(timesteps)
+    handle_buildings(timesteps)
     grim_reaper()
-    
-    if(game_over):
-        break
     
     current_time = time.time()
     seconds = current_time - START_TIME
@@ -40,6 +42,7 @@ while (not game_over):
     os.system("clear")
     hud(timesteps)
     print_canvas()
+    check_game_over()
     footer()
     
 # Exit

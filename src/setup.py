@@ -29,7 +29,14 @@ def init():
     for i in range(NUM_HUTS):
         x = random.randint(1, CENTER_X - HUT_SIZE[0] - 1)
         y = random.randint(1, CANVAS_HEIGHT - HUT_SIZE[1])
-        hut[i].draw(10, 10)
+        # hut[i].draw(x, y)
+        
+    hut[0].draw(10, 9)
+    hut[1].draw(40, 4)
+    hut[2].draw(20, 25)
+    hut[3].draw(50, 20)
+    hut[4].draw(24, 17)
+    hut[5].draw(31, 17)
           
     # Cannons
     cannon = [Cannon("Cannon",
@@ -115,8 +122,17 @@ def init():
     walls[47].draw(33, 18)
     return
 
+def check_game_over():
+    if not len(Building.all):
+        end_game(1)
+    if not len(Entity.all):
+        end_game(0)
          
-def end_game():
+def end_game(status):
+    if(status):
+        print("You win")
+    else:
+        print("You Lose")
     show_cursor()
     os.system("stty echo")
     exit()
