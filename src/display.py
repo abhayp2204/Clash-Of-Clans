@@ -4,32 +4,40 @@ from .building import *
 from .spell import *
 
 def hud(timesteps):
-    k = 1 + int(K.health/150) if K.alive else 0
-    Print([K.color + "King: " + str(int(K.health)) + "*"*k + " "*(int(K.max_health/150) - k)])
+    BUFFER = ""
+    
+    hu = 400
+    k = 1 + int(K.health/hu) if K.alive else 0
+    Print([K.color + "King: " + str(int(K.health)) + "*"*k + " "*(int(K.max_health/hu) - k)])
     
     t = 1 + int(th.health/100) if th.alive else 0
     
-    Print([th.color + "  Townhall: " + "*"*t + " "*(int(th.max_health/100) - t)])
+    if th.alive:
+        Print([th.color + "  Townhall: " + "*"*t + " "*(int(th.max_health/100) - t)])
+    else:
+        hu = 100
+        w = 1 + int(W.health/hu) if W.alive else 0
+        Print([Fore.GREEN + "Witch: " + str(int(W.health)) + "*"*w + " "*(int(W.max_health/hu) - w)])
+        
     for i in range(NUM_CANNONS):
         C = Cannon.all[i]
         c = 1 + int(C.health/100) if C.alive else 0
         Print([C.color + "   Cannon " + str(i+1) + ": " + "*"*c + " "*(int(C.max_health/100) - c)])
         
-    print(Fore.YELLOW + "   Buildings: " + str(len(Building.all)), end="")
-    print("   Timestep: " + str(timesteps))
-    
-    print(Fore.GREEN + "Heal spells: " + str(Heal.number), end="")
-    print(Fore.RED + "   Rage spells: " + str(Rage.number), end="")
-    print(Fore.RED + "(", end="")
-    print(Fore.RED + "." if Rage.active else "", end="")
-    print(Fore.RED + ")", end="")
-    print()
+    BUFFER += Fore.YELLOW + "\nBuildings: " + str(len(Building.all))
+    BUFFER += Fore.WHITE + "   Timestep: " + str(timesteps) + "\n"
+    BUFFER += Fore.GREEN + "Heal spells: " + str(Heal.number)
+    BUFFER += Fore.RED + "   Rage spells: " + str(Rage.number)
+    BUFFER += Fore.RED + "("
+    BUFFER += Fore.RED + "." if Rage.active else ""
+    BUFFER += Fore.RED + ")"
+    print(BUFFER)
          
 def footer():
     pass
-    print("Troops = ", Entity.all)
-    print("Buildings = ", Building.all)
-    # print("Message = ", K.message)
+    # print("Troops = ", Entity.all)
+    # print("Buildings = ", Building.all)
+    # print("Message = ", th.message)
          
 def print_canvas():
     # Use buffer to avoid flickering

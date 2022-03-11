@@ -48,12 +48,9 @@ def init():
                      CANNON_SPAN)
                 for _ in range(0, NUM_CANNONS)]
     
-    for i in range(NUM_CANNONS):
-        left_offset = 23
-        gap = 8
-        x = left_offset + i*gap
-        y = CENTER_Y - TOWNHALL_SIZE[1]
-        cannon[i].draw(x, y)
+    cannon[0].draw(23, CENTER_Y - TOWNHALL_SIZE[1])
+    cannon[1].draw(31, CENTER_Y - TOWNHALL_SIZE[1])
+    cannon[2].draw(27, CENTER_Y - TOWNHALL_SIZE[1] - 6)
         
     # Spawn Points
     for i in range(NUM_SPAWN_POINTS):
@@ -65,7 +62,7 @@ def init():
         
     # Wall
     walls = []
-    for i in range(50):
+    for i in range(70):
         walls.append(Building("Wall", WALL_COLOR, WALL_SIZE, WALL_HEALTH))
 
     walls[0].draw(7, 11)
@@ -120,19 +117,55 @@ def init():
     walls[45].draw(31, 18)
     walls[46].draw(32, 18)
     walls[47].draw(33, 18)
+    
+    walls[48].draw(25, 10)
+    walls[49].draw(25, 9)
+    walls[50].draw(25, 8)
+    walls[51].draw(25, 7)
+    walls[52].draw(25, 6)
+    
+    walls[53].draw(30, 10)
+    walls[54].draw(30, 9)
+    walls[55].draw(30, 8)
+    walls[56].draw(30, 7)
+    walls[57].draw(30, 6)
+    
+    walls[53].draw(25, 6)
+    walls[54].draw(26, 6)
+    walls[55].draw(27, 6)
+    walls[56].draw(28, 6)
+    walls[57].draw(29, 6)
+    walls[58].draw(30, 6)
+    
+    
     return
 
 def check_game_over():
-    if not len(Building.all):
+    if not len(Building.all) and not W.alive:
         end_game(1)
     if not len(Entity.all):
         end_game(0)
          
 def end_game(status):
+    # os.system("clear")
     if(status):
-        print("You win")
+        print("█       █  █████   █    █        █           █  █████  ██       █")
+        print(" █     █   █   █   █    █        █           █    █    █ █      █")
+        print("  █   █   █     █  █    █        █           █    █    █  █     █") 
+        print("   ███    █     █  █    █         █    █    █     █    █   █    █")
+        print("    █     █     █  █    █         █   █ █   █     █    █    █   █")
+        print("    █      █   █   █    █         █   █ █   █     █    █     █  █")
+        print("    █      █   █   █    █          █ █   █ █      █    █      █ █")
+        print("    █      █████   ██████          ███   ███    █████  █       ██")
     else:
-        print("You Lose")
+        print("█       █  █████   █    █        █         █████    █████   ███████")
+        print(" █     █   █   █   █    █        █         █   █   ██       █      ")
+        print("  █   █   █     █  █    █        █        █     █  █        █      ") 
+        print("   ███    █     █  █    █        █        █     █   ██      ███████")
+        print("    █     █     █  █    █        █        █     █     ███   █      ")
+        print("    █      █   █   █    █        █         █   █        ██  █      ")
+        print("    █      █   █   █    █        █         █   █        ██  █      ")
+        print("    █      █████   ██████        ██████    █████    █████   ███████")
     show_cursor()
     os.system("stty echo")
     exit()

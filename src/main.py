@@ -42,6 +42,18 @@ def handle_barbarians(timesteps):
         if(attacking and timesteps != B.attack_time):
             B.attack_time = timesteps
             B.attack(target)
+    
+def handle_witch(timesteps):
+    if not K.alive:
+        end_game(0)
+    
+    W.damage = WITCH_DAMAGE
+    if not W.alive:
+        return
+    if(timesteps % 3 == 0):
+        W.move(K)
+        if(W.within_attack_range(K)):
+            W.attack(K)
             
 def handle_cannons(timesteps):
     for C in Cannon.all:
@@ -68,16 +80,19 @@ def handle_cannons(timesteps):
 def handle_buildings(timesteps):
     for b in Building.all:
         perc = 100*(b.health/b.max_health)
-        if(perc < 50):
-            b.draw(b.X, b.Y)
+        b.draw(b.X, b.Y)
                 
 def grim_reaper():
     # Buildings
     i = 0
     for building in Building.all:
-        if(building.alive and building.health <= 0):
+        if(building.alive and building.health <= 0):            
             building.alive = False
             Building.all.pop(i)
+            
+            if(not th.alive and not W.alive and not W.killed):
+                trap()
+                
             building.draw(building.X, building.Y)
         i += 1
         
@@ -87,6 +102,7 @@ def grim_reaper():
         if(B.alive and B.health <= 0):
             B.alive = False
             Entity.all.pop(i)
+            
             CANVAS[B.Y][B.X] = " "
             CANVAS[B.Y][B.X + 1] = " "
         i += 1
@@ -99,3 +115,17 @@ def grim_reaper():
             Building.walls.pop(i)
             w.draw(w.X, w.Y)
         i += 1
+        
+def trap():
+    W.alive = True
+    for B in Entity.Barbarians:
+        B.alive = False
+        B.erase()
+    
+    for y in [6, 24]:
+        for x in range(30, 80):
+            CANVAS[y][x] = Fore.RED + "*"
+    for x in [30, 80]:
+        for y in range(6, 25):
+            CANVAS[y][x] = Fore.RED + "*"
+    W.draw(38, 22)

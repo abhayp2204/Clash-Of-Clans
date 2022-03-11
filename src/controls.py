@@ -26,6 +26,8 @@ def input_handler(key, timesteps):
     # Attack
     if(key == " "):
         K.attack()
+    if(key == "e"):
+        K.use_leviathan_axe()
         
     # Spells
     if(key == "r"):

@@ -7,6 +7,14 @@ def exit_game():
     show_cursor()
     os.system("stty echo")
     print(message)
+    
+def untrap():
+    for y in [6, 24]:
+        for x in range(30, 80):
+            CANVAS[y][x] = " "
+    for x in [30, 80]:
+        for y in range(6, 25):
+            CANVAS[y][x] = " "
 
 def distance(troop, building):
     dx = 2*building.X - troop.X

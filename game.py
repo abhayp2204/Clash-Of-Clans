@@ -20,8 +20,6 @@ BUFFER = ""
 timesteps = 0
 
 while (True):
-    # break
-
     key = input_to(getch)
     input_handler(key, timesteps)
     
@@ -32,6 +30,7 @@ while (True):
     handle_barbarians(timesteps)
     handle_cannons(timesteps)
     handle_buildings(timesteps)
+    handle_witch(timesteps)
     grim_reaper()
     
     current_time = time.time()

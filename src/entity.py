@@ -33,6 +33,10 @@ class Entity:
         self.move_time = 0
         self.attack_time = 0
         self.message = ""
+        self.killed = False
+        
+        self.X = 0
+        self.Y = 9
         
         # Add to list of entities
         Entity.all.append(self)
@@ -53,6 +57,10 @@ class Entity:
         for y in range(posY, posY + self.size[1]):
             for x in range(posX*2, posX*2 + self.size[0]*2):
                 CANVAS[y][x] = char
+                
+    def erase(self):
+        CANVAS[self.Y][self.X] = " "
+        CANVAS[self.Y][self.X + 1] = " "
 
     def move(self, target):
         def erase():
@@ -83,14 +91,24 @@ class Entity:
         if(not self.target_wall.alive):
             self.clearing_path = False
             
-        if(target.X*2 > self.X):
-            ch = CANVAS[self.Y][self.X + 2]
-            if(ch == " " or ch == BARBARIAN_COLOR + "█"):
-                move_right()
-        elif(target.X*2 < self.X):
-            ch = CANVAS[self.Y][self.X - 2]
-            if(ch == " " or ch == BARBARIAN_COLOR + "█"):
-                move_left()
+        if(self != W):
+            if(target.X*2 > self.X):
+                ch = CANVAS[self.Y][self.X + 2]
+                if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+                    move_right()
+            elif(target.X*2 < self.X):
+                ch = CANVAS[self.Y][self.X - 2]
+                if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+                    move_left()
+        else:
+            if(target.X > self.X):
+                ch = CANVAS[self.Y][self.X + 2]
+                if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+                    move_right()
+            elif(target.X < self.X):
+                ch = CANVAS[self.Y][self.X - 2]
+                if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+                    move_left()
                 
         if(target.Y > self.Y):
             ch = CANVAS[self.Y + 1][self.X]
@@ -135,9 +153,10 @@ class Entity:
     
     def within_attack_range(self, target):
         dx = int((target.X - self.X/2))
+        if(self == W):
+            dx = int((target.X - self.X)/2)
+            
         dy = (target.Y - self.Y)
-        
-        K.message = "dy =" + str(dy)
         
         # Far
         if(dx > 1 or dx < -target.size[0] or dy > 1 or dy < -target.size[1]):
@@ -209,6 +228,8 @@ class King(Entity):
         
         self.direction = WEST
         if(CANVAS[self.Y][self.X - 2 + 1] != " "):
+            return False
+        if(CANVAS[self.Y][self.X - 2] != " "):
             return False
         
         def clear():
@@ -319,8 +340,34 @@ class King(Entity):
                 
     def use_leviathan_axe(self):
         for b in Building.all:
-            if(abs(b.X*2 - self.X) <= KING_AXE_AREA and abs(b.Y - self.Y) <= KING_AXE_AREA):
-                b.health -= 10000
+            x_pass = False
+            y_pass = False
+            
+            if((b.X - int(self.X/2) >= 0 and b.X - int(self.X/2) <= KING_AXE_AREA) or (int(self.X/2) - b.X > 0 and int(self.X/2) - b.X <= KING_AXE_AREA + b.size[0])):
+                x_pass = True
+            if((b.Y - self.Y >= 0 and b.Y - self.Y <= KING_AXE_AREA) or (self.Y - b.Y > 0 and self.Y - b.Y <= KING_AXE_AREA + b.size[1])):
+                y_pass = True
+            
+            if(x_pass and y_pass):
+                b.health -= KING_AXE_DAMAGE
+                
+        for b in Building.walls:
+            x_pass = False
+            y_pass = False
+            
+            if((b.X - int(self.X/2) >= 0 and b.X - int(self.X/2) <= KING_AXE_AREA) or (int(self.X/2) - b.X > 0 and int(self.X/2) - b.X <= KING_AXE_AREA + b.size[0])):
+                x_pass = True
+            if((b.Y - self.Y >= 0 and b.Y - self.Y <= KING_AXE_AREA) or (self.Y - b.Y > 0 and self.Y - b.Y <= KING_AXE_AREA + b.size[1])):
+                y_pass = True
+            
+            if(x_pass and y_pass):
+                b.health -= KING_AXE_DAMAGE
+
+        if(W.alive):
+            W.health -= KING_AXE_DAMAGE
+            if(W.health <= 0):
+                W.killed = True
+                untrap()
     
 K = King("Barbarian King",
          KING_COLOR,
@@ -330,3 +377,11 @@ K = King("Barbarian King",
          KING_SPEED,
          KING_AXE_DAMAGE,
          KING_AXE_AREA)
+
+W = Entity("Witch",
+           WITCH_COLOR,
+           WITCH_SIZE,
+           WITCH_HEALTH,
+           WITCH_DAMAGE,
+           WITCH_SPEED)
+W.alive = False

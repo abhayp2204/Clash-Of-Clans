@@ -15,6 +15,7 @@ class Building:
         self.max_health = max_health
         self.health = max_health
         self.alive = True
+        self.message = ""
         
         # Position
         self.X = 0
@@ -37,11 +38,13 @@ class Building:
         char = (self.color + "█") if self.alive else " "  
         for y in range(posY, posY + self.size[1]):
             for x in range(posX*2, posX*2 + self.size[0]*2):
-                CANVAS[y][x] = Fore.GREEN + "█"
+                CANVAS[y][x] = self.color + "█"
                 if(self.name == "Wall"):
                     CANVAS[y][x] = Fore.WHITE + "█"
                     
                 perc = 100*(self.health/self.max_health)
+                if(perc < 100):
+                    CANVAS[y][x] = Fore.GREEN + "█"
                 if(perc < 50):
                     CANVAS[y][x] = Fore.YELLOW + "█"
                 if(perc <= 20):
@@ -80,15 +83,17 @@ class Cannon(Building):
             target.health = 0
             
     def in_range(self, troop):
-        if troop in self.targets:
-            return
-        
         within_x_span = (troop.X > (self.X - self.size[0] - self.span)*2) and (troop.X < (self.X + self.size[0] + self.span)*2)
         within_y_span = troop.Y > (self.Y - self.size[1] - self.span) and troop.Y < (self.Y + self.size[1] + self.span)
-        if(within_x_span and within_y_span):
+        
+        if(within_x_span and within_y_span and not (troop in self.targets)):
             self.targets.append(troop)
-            troop.hitlist = True
-
+            return
+        
+        if(not(within_x_span and within_y_span) and (troop in self.targets)):
+            self.targets.remove(troop)
+        
+    
 class Gold_Mine(Building):
     pass
 
