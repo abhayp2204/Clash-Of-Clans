@@ -48,7 +48,7 @@ class Entity:
         self.X = posX*2
         self.Y = posY
                 
-        char = (self.color + "█") if self.alive else " "
+        char = (self.color + BLOCK) if self.alive else " "
         for y in range(posY, posY + self.size[1]):
             for x in range(posX*2, posX*2 + self.size[0]*2):
                 CANVAS[y][x] = char
@@ -58,8 +58,8 @@ class Entity:
             CANVAS[self.Y][self.X] = " "
             CANVAS[self.Y][self.X + 1] = " "
         def redraw():
-            CANVAS[self.Y][self.X] = self.color + "█"
-            CANVAS[self.Y][self.X + 1] = self.color + "█"
+            CANVAS[self.Y][self.X] = self.color + BLOCK
+            CANVAS[self.Y][self.X + 1] = self.color + BLOCK
         def move_up():
             erase()
             self.Y -= 1
@@ -85,9 +85,9 @@ class Entity:
             
         if(target.X*2 > self.X):
             ch = CANVAS[self.Y][self.X + 2]
-            if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+            if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                 move_right()
-            elif(ch == WALL_COLOR + "█"):
+            elif(ch == WALL_COLOR + BLOCK):
                 for w in Building.walls:
                     if(self.Y == w.Y and self.X + 2 == w.X*2):
                         self.target_wall = w
@@ -96,9 +96,9 @@ class Entity:
                 
         elif(target.X*2 < self.X):
             ch = CANVAS[self.Y][self.X - 2]
-            if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+            if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                 move_left()
-            elif(ch == WALL_COLOR + "█"):
+            elif(ch == WALL_COLOR + BLOCK):
                 for w in Building.walls:
                     if(self.Y == w.Y and self.X - 2 == w.X*2):
                         self.target_wall = w
@@ -106,9 +106,9 @@ class Entity:
             
         if(target.Y > self.Y):
             ch = CANVAS[self.Y + 1][self.X]
-            if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+            if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                 move_down()
-            elif(ch == WALL_COLOR + "█"):
+            elif(ch == WALL_COLOR + BLOCK):
                 for w in Building.walls:
                     if(self.Y + 1 == w.Y and self.X == w.X*2):
                         self.target_wall = w
@@ -116,9 +116,9 @@ class Entity:
                     
         elif(target.Y < self.Y):
             ch = CANVAS[self.Y - 1][self.X]
-            if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+            if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                 move_up()
-            elif(ch == WALL_COLOR + "█"):
+            elif(ch == WALL_COLOR + BLOCK):
                 for w in Building.walls:
                     if(self.Y - 1 == w.Y and self.X== w.X*2):
                         self.target_wall = w
@@ -186,8 +186,8 @@ class King(Entity):
         
         clear()
         self.Y -= 1
-        CANVAS[self.Y][self.X] = self.color + "█"
-        CANVAS[self.Y][self.X + 1] = self.color + "█"
+        CANVAS[self.Y][self.X] = self.color + BLOCK
+        CANVAS[self.Y][self.X + 1] = self.color + BLOCK
         
         self.direction = NORTH
         return True
@@ -205,8 +205,8 @@ class King(Entity):
         
         clear()
         self.X -= 2
-        CANVAS[self.Y][self.X] = self.color + "█"
-        CANVAS[self.Y][self.X + 1] = self.color + "█"
+        CANVAS[self.Y][self.X] = self.color + BLOCK
+        CANVAS[self.Y][self.X + 1] = self.color + BLOCK
         
         self.direction = WEST
         return True
@@ -224,8 +224,8 @@ class King(Entity):
         
         clear()
         self.Y += 1
-        CANVAS[self.Y][self.X] = self.color + "█"
-        CANVAS[self.Y][self.X + 1] = self.color + "█"
+        CANVAS[self.Y][self.X] = self.color + BLOCK
+        CANVAS[self.Y][self.X + 1] = self.color + BLOCK
         
         self.direction = SOUTH
         return True
@@ -243,8 +243,8 @@ class King(Entity):
         
         clear()
         self.X += 2
-        CANVAS[self.Y][self.X] = self.color + "█"
-        CANVAS[self.Y][self.X + 1] = self.color + "█"
+        CANVAS[self.Y][self.X] = self.color + BLOCK
+        CANVAS[self.Y][self.X + 1] = self.color + BLOCK
         
         self.direction = EAST
         return True

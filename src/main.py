@@ -35,13 +35,43 @@ def handle_barbarians(timesteps):
         B.move(target)
         
         # Re-color
-        CANVAS[B.Y][B.X] = B.color + "█"
-        CANVAS[B.Y][B.X + 1] = B.color + "█"
+        CANVAS[B.Y][B.X] = B.color + BLOCK
+        CANVAS[B.Y][B.X + 1] = B.color + BLOCK
         
         # Attempt to attack once every three timesteps
         if(attacking and timesteps != B.attack_time):
             B.attack_time = timesteps
             B.attack(target)
+            
+def handle_archers(timesteps):
+    for A in Entity.Archers:
+        
+        # Ignore dead barbarians
+        if not A.alive:
+            continue
+        
+        target = get_target(A)
+        if(A.target_wall != th and A.target_wall.alive):
+            target = A.target_wall
+            
+        attacking = A.within_attack_range(target)
+        
+        if(timesteps == A.move_time):
+            continue
+        if(timesteps % int(6/A.speed) != 0):
+            continue
+        
+        A.move_time = timesteps
+        A.move(target)
+        
+        # Re-color
+        CANVAS[A.Y][A.X] = A.color + BLOCK
+        CANVAS[A.Y][A.X + 1] = A.color + BLOCK
+        
+        # Attempt to attack once every three timesteps
+        if(attacking and timesteps != A.attack_time):
+            A.attack_time = timesteps
+            A.attack(target)
     
 def handle_witch(timesteps):
     if not K.alive:

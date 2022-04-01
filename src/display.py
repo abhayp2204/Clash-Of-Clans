@@ -8,21 +8,21 @@ def hud(timesteps):
     
     hu = 400
     k = 1 + int(K.health/hu) if K.alive else 0
-    Print([K.color + "King: " + str(int(K.health)) + "*"*k + " "*(int(K.max_health/hu) - k)])
+    BUFFER += K.color + "King: " + str(int(K.health)) + "*"*k + " "*(int(K.max_health/hu) - k)
     
     t = 1 + int(th.health/100) if th.alive else 0
     
     if th.alive:
-        Print([th.color + "  Townhall: " + "*"*t + " "*(int(th.max_health/100) - t)])
+        BUFFER += th.color + "  Townhall: " + "*"*t + " "*(int(th.max_health/100) - t)
     else:
         hu = 100
         w = 1 + int(W.health/hu) if W.alive else 0
-        Print([Fore.GREEN + "Witch: " + str(int(W.health)) + "*"*w + " "*(int(W.max_health/hu) - w)])
+        BUFFER += Fore.GREEN + "Witch: " + str(int(W.health)) + "*"*w + " "*(int(W.max_health/hu) - w)
         
     for i in range(NUM_CANNONS):
         C = Cannon.all[i]
         c = 1 + int(C.health/100) if C.alive else 0
-        Print([C.color + "   Cannon " + str(i+1) + ": " + "*"*c + " "*(int(C.max_health/100) - c)])
+        BUFFER += C.color + "   Cannon " + str(i+1) + ": " + "*"*c + " "*(int(C.max_health/100) - c)
         
     BUFFER += Fore.YELLOW + "\nBuildings: " + str(len(Building.all))
     BUFFER += Fore.WHITE + "   Timestep: " + str(timesteps) + "\n"
@@ -31,7 +31,7 @@ def hud(timesteps):
     BUFFER += Fore.RED + "("
     BUFFER += Fore.RED + "." if Rage.active else ""
     BUFFER += Fore.RED + ")"
-    print(BUFFER)
+    return BUFFER
          
 def footer():
     pass
@@ -39,20 +39,13 @@ def footer():
     # print("Buildings = ", Building.all)
     # print("Message = ", th.message)
          
-def print_canvas():
+def get_canvas(BUFFER):
     # Use buffer to avoid flickering
-    BUFFER = "\n"
+    BUFFER += "\n"
     for i in range(CANVAS_HEIGHT):
         BUFFER += "".join(CANVAS[i])
         BUFFER += "\n"
-    print(BUFFER)
-    
-def print_canvas_2():
-    # Use buffer to avoid flickering
-    for i in range(CANVAS_HEIGHT):
-        for j in range(CANVAS_WIDTH):        
-            print(CANVAS[i][j])
-    print()
+    return BUFFER
         
 def set_border():
     # Horizontal borders

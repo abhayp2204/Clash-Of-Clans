@@ -57,8 +57,8 @@ def init():
         P = SPAWN_POINT[i]
         x = P[0]
         y = P[1]
-        CANVAS[y][x] = SPAWN_POINT_COLOR + "█"
-        CANVAS[y][x+1] = SPAWN_POINT_COLOR + "█"
+        CANVAS[y][x] = SPAWN_POINT_COLOR + BLOCK
+        CANVAS[y][x+1] = SPAWN_POINT_COLOR + BLOCK
         
     # Wall
     walls = []
@@ -149,23 +149,23 @@ def check_game_over():
 def end_game(status):
     # os.system("clear")
     if(status):
-        print("█       █  █████   █    █        █           █  █████  ██       █")
-        print(" █     █   █   █   █    █        █           █    █    █ █      █")
-        print("  █   █   █     █  █    █        █           █    █    █  █     █") 
-        print("   ███    █     █  █    █         █    █    █     █    █   █    █")
-        print("    █     █     █  █    █         █   █ █   █     █    █    █   █")
-        print("    █      █   █   █    █         █   █ █   █     █    █     █  █")
-        print("    █      █   █   █    █          █ █   █ █      █    █      █ █")
-        print("    █      █████   ██████          ███   ███    █████  █       ██")
+        print("O       O  OOOOO   O    O        O           O  OOOOO  OO       O")
+        print(" O     O   O   O   O    O        O           O    O    O O      O")
+        print("  O   O   O     O  O    O        O           O    O    O  O     O") 
+        print("   OOO    O     O  O    O         O    O    O     O    O   O    O")
+        print("    O     O     O  O    O         O   O O   O     O    O    O   O")
+        print("    O      O   O   O    O         O   O O   O     O    O     O  O")
+        print("    O      O   O   O    O          O O   O O      O    O      O O")
+        print("    O      OOOOO   OOOOOO          OOO   OOO    OOOOO  O       OO")
     else:
-        print("█       █  █████   █    █        █         █████    █████   ███████")
-        print(" █     █   █   █   █    █        █         █   █   ██       █      ")
-        print("  █   █   █     █  █    █        █        █     █  █        █      ") 
-        print("   ███    █     █  █    █        █        █     █   ██      ███████")
-        print("    █     █     █  █    █        █        █     █     ███   █      ")
-        print("    █      █   █   █    █        █         █   █        ██  █      ")
-        print("    █      █   █   █    █        █         █   █        ██  █      ")
-        print("    █      █████   ██████        ██████    █████    █████   ███████")
+        print("O       O  OOOOO   O    O        O         OOOOO    OOOOO   OOOOOOO")
+        print(" O     O   O   O   O    O        O         O   O   OO       O      ")
+        print("  O   O   O     O  O    O        O        O     O  O        O      ") 
+        print("   OOO    O     O  O    O        O        O     O   OO      OOOOOOO")
+        print("    O     O     O  O    O        O        O     O     OOO   O      ")
+        print("    O      O   O   O    O        O         O   O        OO  O      ")
+        print("    O      O   O   O    O        O         O   O        OO  O      ")
+        print("    O      OOOOO   OOOOOO        OOOOOO    OOOOO    OOOOO   OOOOOOO")
     show_cursor()
     os.system("stty echo")
     exit()

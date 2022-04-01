@@ -39,6 +39,7 @@ def input_handler(key, timesteps):
             Heal.apply(timesteps)
             Heal.number -= 1
         
+    # Controls to spawn Barbarians
     if(key == "1"):
         if(len(Entity.Barbarians) == MAX_BARBARIANS):
             return
@@ -63,3 +64,29 @@ def input_handler(key, timesteps):
         
         B.X = SPAWN_POINT_C[0] + 2
         B.Y = SPAWN_POINT_C[1]
+
+    # Controls to spawn Archers
+    if(key == "4"):
+        if(len(Entity.Archers) == MAX_ARCHERS):
+            return
+        
+        A = Entity("Archer", ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED)
+        
+        A.X = SPAWN_POINT_A[0]
+        A.Y = SPAWN_POINT_A[1] + 1
+    if(key == "5"):
+        if(len(Entity.Archers) == MAX_ARCHERS):
+            return
+        
+        A = Entity("Archer", ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED)
+        
+        A.X = SPAWN_POINT_B[0]
+        A.Y = SPAWN_POINT_B[1] + 1
+    if(key == "6"):
+        if(len(Entity.Archers) == MAX_ARCHERS):
+            return
+        
+        A = Entity("Archer", ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED)
+        
+        A.X = SPAWN_POINT_C[0] + 2
+        A.Y = SPAWN_POINT_C[1]

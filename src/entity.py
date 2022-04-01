@@ -6,6 +6,7 @@ class Entity:
     # List of all entities
     all = []
     Barbarians = []
+    Archers = []
     
     # Class attributes
     damage_rate = 1.0
@@ -43,19 +44,21 @@ class Entity:
         
         if(name == "Barbarian"):
             Entity.Barbarians.append(self)
+        if(name == "Archer"):
+            Entity.Archers.append(self)
 
     def draw(self, posX, posY): 
-        if(2*(posX + self.size[0]) >= CANVAS_WIDTH):
+        if(X_SCALE*(posX + self.size[0]) >= CANVAS_WIDTH):
             return
         if(posY + self.size[1] >= CANVAS_HEIGHT):
             return
         
-        self.X = posX*2
+        self.X = posX*X_SCALE
         self.Y = posY
                 
-        char = (self.color + "█") if self.alive else " "
+        char = (self.color + BLOCK) if self.alive else " "
         for y in range(posY, posY + self.size[1]):
-            for x in range(posX*2, posX*2 + self.size[0]*2):
+            for x in range(posX*X_SCALE, posX*X_SCALE + self.size[0]*X_SCALE):
                 CANVAS[y][x] = char
                 
     def erase(self):
@@ -65,10 +68,10 @@ class Entity:
     def move(self, target):
         def erase():
             CANVAS[self.Y][self.X] = " "
-            CANVAS[self.Y][self.X + 1] = " "
+            # CANVAS[self.Y][self.X + 1] = " "
         def redraw():
-            CANVAS[self.Y][self.X] = self.color + "█"
-            CANVAS[self.Y][self.X + 1] = self.color + "█"
+            CANVAS[self.Y][self.X] = self.color + BLOCK
+            # CANVAS[self.Y][self.X + 1] = self.color + BLOCK
             
         def move_up():
             erase()
@@ -80,11 +83,11 @@ class Entity:
             redraw()
         def move_left():
             erase()
-            self.X -= 2
+            self.X -= X_SCALE
             redraw()
         def move_right():
             erase()
-            self.X += 2
+            self.X += X_SCALE
             redraw()
         
             
@@ -92,69 +95,69 @@ class Entity:
             self.clearing_path = False
             
         if(self != W):
-            if(target.X*2 > self.X):
-                ch = CANVAS[self.Y][self.X + 2]
-                if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+            if(target.X*X_SCALE > self.X):
+                ch = CANVAS[self.Y][self.X + X_SCALE]
+                if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                     move_right()
-            elif(target.X*2 < self.X):
-                ch = CANVAS[self.Y][self.X - 2]
-                if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+            elif(target.X*X_SCALE < self.X):
+                ch = CANVAS[self.Y][self.X - X_SCALE]
+                if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                     move_left()
         else:
             if(target.X > self.X):
-                ch = CANVAS[self.Y][self.X + 2]
-                if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+                ch = CANVAS[self.Y][self.X + X_SCALE]
+                if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                     move_right()
             elif(target.X < self.X):
-                ch = CANVAS[self.Y][self.X - 2]
-                if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+                ch = CANVAS[self.Y][self.X - X_SCALE]
+                if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                     move_left()
                 
         if(target.Y > self.Y):
             ch = CANVAS[self.Y + 1][self.X]
-            if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+            if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                 move_down()
         elif(target.Y < self.Y):
             ch = CANVAS[self.Y - 1][self.X]
-            if(ch == " " or ch == BARBARIAN_COLOR + "█"):
+            if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                 move_up()
                 
-        if(target.X*2 > self.X): 
-            if(ch == WALL_COLOR + "█"):
+        if(target.X*X_SCALE > self.X): 
+            if(ch == WALL_COLOR + BLOCK):
                 for w in Building.walls:
-                    if(self.Y == w.Y and self.X + 2 == w.X*2):
+                    if(self.Y == w.Y and self.X + X_SCALE == w.X*X_SCALE):
                         self.target_wall = w
                         self.clearing_path = True
                         # w.health = -1
                         return
-        elif(target.X*2 < self.X): 
-            if(ch == WALL_COLOR + "█"):
+        elif(target.X*X_SCALE < self.X): 
+            if(ch == WALL_COLOR + BLOCK):
                 for w in Building.walls:
-                    if(self.Y == w.Y and self.X - 2 == w.X*2):
+                    if(self.Y == w.Y and self.X - X_SCALE == w.X*X_SCALE):
                         self.target_wall = w
                         self.clearing_path = True
                         return
             
         
         if(target.Y > self.Y):
-            if(ch == WALL_COLOR + "█"):
+            if(ch == WALL_COLOR + BLOCK):
                 for w in Building.walls:
-                    if(self.Y + 1 == w.Y and self.X == w.X*2):
+                    if(self.Y + 1 == w.Y and self.X == w.X*X_SCALE):
                         self.target_wall = w
                         self.clearing_path = True
                         return
         elif(target.Y < self.Y):
-            if(ch == WALL_COLOR + "█"):
+            if(ch == WALL_COLOR + BLOCK):
                 for w in Building.walls:
-                    if(self.Y - 1 == w.Y and self.X== w.X*2):
+                    if(self.Y - 1 == w.Y and self.X== w.X*X_SCALE):
                         self.target_wall = w
                         self.clearing_path = True
                         return
     
     def within_attack_range(self, target):
-        dx = int((target.X - self.X/2))
+        dx = int((target.X - self.X/X_SCALE))
         if(self == W):
-            dx = int((target.X - self.X)/2)
+            dx = int((target.X - self.X)/X_SCALE)
             
         dy = (target.Y - self.Y)
         
@@ -203,6 +206,14 @@ class King(Entity):
         self.axe_area = axe_area
         self.direction = EAST
         
+    def clear(self):
+        for i in range(X_SCALE):
+                CANVAS[self.Y][self.X + i] = " "
+                
+    def paint(self):
+        for i in range(X_SCALE):
+            CANVAS[self.Y][self.X + i] = self.color + BLOCK
+        
     def move_up(self):
         if not self.alive:
             return
@@ -210,15 +221,10 @@ class King(Entity):
         self.direction = NORTH
         if(CANVAS[self.Y - 1][self.X] != " "):
             return False
-        
-        def clear():
-            CANVAS[self.Y][self.X] = " "
-            CANVAS[self.Y][self.X + 1] = " "
-        
-        clear()
+                  
+        self.clear()
         self.Y -= 1
-        CANVAS[self.Y][self.X] = self.color + "█"
-        CANVAS[self.Y][self.X + 1] = self.color + "█"
+        self.paint()
         
         return True
         
@@ -227,19 +233,14 @@ class King(Entity):
             return
         
         self.direction = WEST
-        if(CANVAS[self.Y][self.X - 2 + 1] != " "):
-            return False
-        if(CANVAS[self.Y][self.X - 2] != " "):
-            return False
         
-        def clear():
-            CANVAS[self.Y][self.X] = " "
-            CANVAS[self.Y][self.X + 1] = " "
+        for i in range(X_SCALE):
+            if(CANVAS[self.Y][self.X - i - 1] != " "):
+                return False
         
-        clear()
-        self.X -= 2
-        CANVAS[self.Y][self.X] = self.color + "█"
-        CANVAS[self.Y][self.X + 1] = self.color + "█"
+        self.clear()
+        self.X -= X_SCALE
+        self.paint()
         
         return True
         
@@ -251,14 +252,9 @@ class King(Entity):
         if(CANVAS[self.Y + 1][self.X] != " "):
             return False
         
-        def clear():
-            CANVAS[self.Y][self.X] = " "
-            CANVAS[self.Y][self.X + 1] = " "
-        
-        clear()
+        self.clear()
         self.Y += 1
-        CANVAS[self.Y][self.X] = self.color + "█"
-        CANVAS[self.Y][self.X + 1] = self.color + "█"
+        self.paint()
         
         return True
         
@@ -267,17 +263,12 @@ class King(Entity):
             return
         
         self.direction = EAST
-        if(CANVAS[self.Y][self.X + 2 + 1] != " "):
+        if(CANVAS[self.Y][self.X + X_SCALE*2 - 1] != " "):
             return False
         
-        def clear():
-            CANVAS[self.Y][self.X] = " "
-            CANVAS[self.Y][self.X + 1] = " "
-        
-        clear()
-        self.X += 2
-        CANVAS[self.Y][self.X] = self.color + "█"
-        CANVAS[self.Y][self.X + 1] = self.color + "█"
+        self.clear()
+        self.X += X_SCALE
+        self.paint()
         
         return True
         

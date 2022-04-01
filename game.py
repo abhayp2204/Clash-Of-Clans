@@ -19,6 +19,9 @@ message = ""
 BUFFER = ""
 timesteps = 0
 
+print(Fore.RED + Back.WHITE + "K")
+end_game(1)
+
 while (True):
     key = input_to(getch)
     input_handler(key, timesteps)
@@ -28,6 +31,7 @@ while (True):
         Rage.reset()
     
     handle_barbarians(timesteps)
+    handle_archers(timesteps)
     handle_cannons(timesteps)
     handle_buildings(timesteps)
     handle_witch(timesteps)
@@ -39,10 +43,11 @@ while (True):
     
     # Display
     os.system("clear")
-    hud(timesteps)
-    print_canvas()
+    BUFFER = hud(timesteps)
+    BUFFER = get_canvas(BUFFER)
+    print(BUFFER)
     check_game_over()
-    footer()
+    # footer()
     
 # Exit
 print()

@@ -35,20 +35,20 @@ class Building:
         self.X = posX
         self.Y = posY
                 
-        char = (self.color + "█") if self.alive else " "  
+        char = (self.color + BLOCK) if self.alive else " "  
         for y in range(posY, posY + self.size[1]):
             for x in range(posX*2, posX*2 + self.size[0]*2):
-                CANVAS[y][x] = self.color + "█"
+                CANVAS[y][x] = self.color + BLOCK
                 if(self.name == "Wall"):
-                    CANVAS[y][x] = Fore.WHITE + "█"
+                    CANVAS[y][x] = Fore.WHITE + BLOCK
                     
                 perc = 100*(self.health/self.max_health)
                 if(perc < 100):
-                    CANVAS[y][x] = Fore.GREEN + "█"
+                    CANVAS[y][x] = Fore.GREEN + BLOCK
                 if(perc < 50):
-                    CANVAS[y][x] = Fore.YELLOW + "█"
+                    CANVAS[y][x] = Fore.YELLOW + BLOCK
                 if(perc <= 20):
-                    CANVAS[y][x] = Fore.RED + "█"
+                    CANVAS[y][x] = Fore.RED + BLOCK
                 if(perc <= 0):
                     CANVAS[y][x] = " "
                 
