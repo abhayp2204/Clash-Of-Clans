@@ -41,6 +41,7 @@ def input_handler(key, H, timesteps):
         
     # Controls to spawn Barbarians
     if(key == "1"):
+        th.message = "1"
         if(len(Entity.Barbarians) == MAX_BARBARIANS):
             return
         
@@ -48,7 +49,9 @@ def input_handler(key, H, timesteps):
         
         B.X = SPAWN_POINT_A[0]
         B.Y = SPAWN_POINT_A[1] + 1
+        
     if(key == "2"):
+        th.message = "2"
         if(len(Entity.Barbarians) == MAX_BARBARIANS):
             return
         
@@ -56,7 +59,9 @@ def input_handler(key, H, timesteps):
         
         B.X = SPAWN_POINT_B[0] - 4
         B.Y = SPAWN_POINT_B[1]
+        
     if(key == "3"):
+        th.message = "3"
         if(len(Entity.Barbarians) == MAX_BARBARIANS):
             return
         
@@ -116,3 +121,8 @@ def input_handler(key, H, timesteps):
         
         A.X = SPAWN_POINT_C[0] + 2
         A.Y = SPAWN_POINT_C[1]
+        
+    if key == "p":
+        H = init()
+        
+    return H

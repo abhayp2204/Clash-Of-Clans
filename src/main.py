@@ -35,9 +35,7 @@ def handle_barbarians(timesteps):
             continue
         
         B.move_time = timesteps
-        
-        if not B.speed:
-            B.move(target)
+        B.move(target)
         
         # Attempt to attack once every three timesteps
         if(attacking and timesteps != B.attack_time):
@@ -110,7 +108,7 @@ def handle_witch(timesteps):
         if(W.within_attack_range(K)):
             W.attack(K)
             
-def handle_cannons(timesteps):
+def handle_cannons(H, timesteps):
     for C in Defender.all:
         if not C.alive:
             continue
@@ -125,7 +123,7 @@ def handle_cannons(timesteps):
                 C.in_range(A)
             for Bl in Entity.Balloons:
                 C.in_range(Bl)
-            C.in_range(K)
+            C.in_range(H)
             
             if not C.targets:
                 continue
@@ -136,7 +134,7 @@ def handle_cannons(timesteps):
             if C.targets:
                 C.fire(C.targets[0])
                 
-def handle_wizard_towers(timesteps):
+def handle_wizard_towers(H, timesteps):
     for C in Defender.all:
         if not C.alive:
             continue
@@ -151,7 +149,7 @@ def handle_wizard_towers(timesteps):
                 C.in_range(A)
             for Bl in Entity.Balloons:
                 C.in_range(Bl)
-            C.in_range(K)
+            C.in_range(H)
             
             if not C.targets:
                 continue

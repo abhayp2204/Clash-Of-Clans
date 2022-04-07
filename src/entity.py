@@ -49,6 +49,9 @@ class Entity:
             Entity.Archers.append(self)
         elif(name == "Balloon"):
             Entity.Balloons.append(self)
+    
+    def __del__(self):
+        print("deleted")
 
     def draw(self, posX, posY): 
         if(X_SCALE*(posX + self.size[0]) >= CANVAS_WIDTH):
@@ -355,11 +358,11 @@ class King(User_Controlled_Entity):
         if(self.direction == NORTH):
             ch = CANVAS[self.Y - 1][self.X]
             if(ch != " "):
-                for building in building.Building.all:
-                    if not(self.X >= building.X * X_SCALE and self.X < (building.X + building.size[0]) * X_SCALE):
+                for B in building.Building.all:
+                    if not(self.X >= B.X * X_SCALE and self.X < (B.X + B.size[0]) * X_SCALE):
                         continue
-                    if(self.Y == building.Y + building.size[1]):
-                        building.health -= KING_DAMAGE
+                    if(self.Y == B.Y + B.size[1]):
+                        B.health -= KING_DAMAGE
                 for w in building.Building.walls:
                     if not(self.X >= w.X * X_SCALE and self.X < (w.X + w.size[0]) * X_SCALE):
                         continue
@@ -369,11 +372,11 @@ class King(User_Controlled_Entity):
         if(self.direction == SOUTH):
             ch = CANVAS[self.Y + 1][self.X]
             if(ch != " "):
-                for building in building.Building.all:
-                    if not(self.X >= building.X * X_SCALE and self.X < (building.X + building.size[0])* X_SCALE):
+                for B in building.Building.all:
+                    if not(self.X >= B.X * X_SCALE and self.X < (B.X + B.size[0])* X_SCALE):
                         continue
-                    if(self.Y + 1 == building.Y):
-                        building.health -= KING_DAMAGE
+                    if(self.Y + 1 == B.Y):
+                        B.health -= KING_DAMAGE
                 for w in building.Building.walls:
                     if not(self.X >= w.X * X_SCALE and self.X < (w.X + w.size[0]) * X_SCALE):
                         continue
@@ -383,11 +386,11 @@ class King(User_Controlled_Entity):
         if(self.direction == EAST):
             ch = CANVAS[self.Y][self.X + X_SCALE]
             if(ch != " "):
-                for building in building.Building.all:
-                    if not(self.Y >= building.Y and self.Y < (building.Y + building.size[1])):
+                for B in building.Building.all:
+                    if not(self.Y >= B.Y and self.Y < (B.Y + B.size[1])):
                         continue
-                    if(self.X + X_SCALE == building.X*X_SCALE):
-                        building.health -= KING_DAMAGE
+                    if(self.X + X_SCALE == B.X*X_SCALE):
+                        B.health -= KING_DAMAGE
                 for w in building.Building.walls:
                     if not(self.Y == w.Y):
                         continue
@@ -397,11 +400,11 @@ class King(User_Controlled_Entity):
         if(self.direction == WEST):
             ch = CANVAS[self.Y][self.X - X_SCALE]
             if(ch != " "):
-                for building in building.Building.all:
-                    if not(self.Y >= building.Y and self.Y < (building.Y + building.size[1])):
+                for B in building.Building.all:
+                    if not(self.Y >= B.Y and self.Y < (B.Y + B.size[1])):
                         continue
-                    if(self.X == building.X*X_SCALE + building.size[0]*X_SCALE):
-                        building.health -= KING_DAMAGE
+                    if(self.X == B.X * X_SCALE + B.size[0]*X_SCALE):
+                        B.health -= KING_DAMAGE
                 for w in building.Building.walls:
                     if not(self.Y >= w.Y and self.Y < w.Y + w.size[1]):
                         continue

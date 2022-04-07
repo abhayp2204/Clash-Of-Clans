@@ -24,7 +24,7 @@ print(Fore.RED + Back.WHITE + "K")
 
 while (True):
     key = input_to(getch)
-    input_handler(key, H, timesteps)
+    H = input_handler(key, H, timesteps)
     
     # Rage spell wears off
     if(timesteps > Rage.time + Rage.duration):
@@ -33,8 +33,8 @@ while (True):
     handle_barbarians(timesteps)
     handle_archers(timesteps)
     handle_balloons(timesteps)
-    handle_cannons(timesteps)
-    handle_wizard_towers(timesteps)
+    handle_cannons(H, timesteps)
+    handle_wizard_towers(H, timesteps)
     handle_buildings(timesteps)
     handle_witch(timesteps)
     grim_reaper()
@@ -42,7 +42,6 @@ while (True):
     current_time = time.time()
     seconds = current_time - START_TIME
     timesteps = int(seconds / TIMESTEP)
-    # th.message = Entity.all[3].health
     
     # Display
     os.system("clear")

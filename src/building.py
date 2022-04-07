@@ -105,11 +105,9 @@ class Defender(Building):
             if self.aoe == 0:
                 if(target.alive):
                     target.health -= self.damage
-                th.message = "no aoe"
                 
             # Attack all troops near target
             else:
-                tgt = []
                 half = int(self.aoe / 2)
                 for E in entity.Entity.all:
                     x_span = E.X >= target.X - half*X_SCALE and E.X <= target.X + half*X_SCALE
@@ -119,8 +117,6 @@ class Defender(Building):
                         # tgt.append(E)
                         E.health -= self.damage
                 
-                    th.message = E.health
-                    
             # Overkill
             if(target.health < 0):
                 target.health = 0
