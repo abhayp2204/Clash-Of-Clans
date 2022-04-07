@@ -64,7 +64,7 @@ class Entity:
         self.Y = posY
                 
         # char = (self.color + BLOCK) if self.alive else " "
-        for i in range(self.size[0]*X_SCALE):
+        for i in range(self.size[0] * X_SCALE):
             char = KING_BGCOLOR + Fore.BLACK + self.letters[i] + Back.RESET
             CANVAS[self.Y][self.X + i] = char
                 

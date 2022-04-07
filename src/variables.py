@@ -74,7 +74,7 @@ TOWNHALL_HEALTH = 1000
 # Huts
 NUM_HUTS = 7
 HUT_SIZE = (1, 1)
-HUT_COLOR = Fore.GREEN
+HUT_COLOR = Back.GREEN
 HUT_HEALTH = 120
 HUT_POSITIONS = [(16, 12),
                  (23, 12),
