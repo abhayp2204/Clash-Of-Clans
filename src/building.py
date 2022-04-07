@@ -120,7 +120,6 @@ class Defender(Building):
                         E.health -= self.damage
                 
                     th.message = E.health
-                # E = entity.Entity.all[3]
                     
             # Overkill
             if(target.health < 0):
