@@ -1,9 +1,7 @@
-from io import StringIO
-
-from pandas import StringDtype
-from .variables import *
 from .display import *
+from .variables import *
 from .input import *
+from .util import *
 
 def init():
     # Color codes don't work on Windows without this command
@@ -23,24 +21,44 @@ def init():
 
     # Huts
     for i in range(0, NUM_HUTS):
-        H = Building("Hut", HUT_COLOR, HUT_SIZE, HUT_HEALTH)
+        H = Building("Hut", HUT_LETTERS, HUT_COLOR, HUT_SIZE, HUT_HEALTH)
         H.draw(HUT_POSITIONS[i][0], HUT_POSITIONS[i][1])
         
     # Cannons
-    cannon = [Defender("Cannon",
-                     CANNON_COLOR,
-                     CANNON_SIZE,
-                     CANNON_HEALTH,
-                     CANNON_DAMAGE,
-                     CANNON_FIRE_RATE,
-                     CANNON_SPAN,
+    # cannon = [Defender("Cannon",
+    #                  CANNON_LETTERS,
+    #                  CANNON_COLOR,
+    #                  CANNON_SIZE,
+    #                  CANNON_HEALTH,
+    #                  CANNON_DAMAGE,
+    #                  CANNON_FIRE_RATE,
+    #                  CANNON_AOE,
+    #                  CANNON_SPAN,
+    #                  True,
+    #                  False)
+    #             for _ in range(0, NUM_CANNONS)]
+    
+    # cannon[0].draw(th.X - CANNON_SIZE[0], th.Y + 1)
+    # cannon[1].draw(th.X + th.size[0], th.Y + 1)
+    # cannon[2].draw(th.X + 1, th.Y - CANNON_SIZE[1] - 1)
+    
+    # Wizard Towers
+    wt = [Defender("Wizard Tower",
+                     WIZARD_LETTERS,
+                     WIZARD_COLOR,
+                     WIZARD_SIZE,
+                     WIZARD_HEALTH,
+                     WIZARD_DAMAGE,
+                     WIZARD_FIRE_RATE,
+                     WIZARD_AOE,
+                     WIZARD_SPAN,
                      True,
                      False)
-                for _ in range(0, NUM_CANNONS)]
+                for _ in range(0, WIZARD_NUM)]
     
-    cannon[0].draw(th.X - CANNON_SIZE[0], th.Y + 1)
-    cannon[1].draw(th.X + th.size[0], th.Y + 1)
-    cannon[2].draw(th.X + 1, th.Y - CANNON_SIZE[1] - 1)
+    wt[0].draw(th.X - WIZARD_SIZE[0], th.Y + 1)
+    wt[1].draw(th.X + th.size[0], th.Y + 1)
+    wt[2].draw(th.X + 1, th.Y - WIZARD_SIZE[1] - 1)
         
     # Spawn Points
     for i in range(NUM_SPAWN_POINTS):
@@ -50,11 +68,18 @@ def init():
         CANVAS[y][x] = SPAWN_POINT_COLOR + BLOCK
         CANVAS[y][x+1] = SPAWN_POINT_COLOR + BLOCK
         
-    setup_walls(cannon)
+    setup_walls(wt)
     
     right = select_hero()
     H = Q if right else K
     H.draw(4, 10)
+    
+    B = Entity("Barbarian", BARBARIAN_LETTERS, BARBARIAN_COLOR, BARBARIAN_SIZE, BARBARIAN_HEALTH, BARBARIAN_DAMAGE, 0, True, False)
+        
+    B.X = 16
+    B.Y = 16
+    B.move(th)
+    
     
     return H
 
@@ -121,6 +146,7 @@ def end_game(status):
         print("    O      O   O   O    O        O         O   O        OO  O      ")
         print("    O      O   O   O    O        O         O   O        OO  O      ")
         print("    O      OOOOO   OOOOOO        OOOOOO    OOOOO    OOOOO   OOOOOOO")
+        
     show_cursor()
     os.system("stty echo")
     
@@ -130,7 +156,7 @@ def setup_walls(cannon):
     # Wall
     walls = []
     for i in range(100):
-        walls.append(Building("Wall", WALL_COLOR, WALL_SIZE, WALL_HEALTH))
+        walls.append(Building("Wall", WALL_LETTERS, WALL_COLOR, WALL_SIZE, WALL_HEALTH))
 
     x = cannon[0].X - 1
     y = cannon[0].Y - 1

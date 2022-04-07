@@ -34,6 +34,7 @@ while (True):
     handle_archers(timesteps)
     handle_balloons(timesteps)
     handle_cannons(timesteps)
+    handle_wizard_towers(timesteps)
     handle_buildings(timesteps)
     handle_witch(timesteps)
     grim_reaper()
@@ -41,6 +42,7 @@ while (True):
     current_time = time.time()
     seconds = current_time - START_TIME
     timesteps = int(seconds / TIMESTEP)
+    # th.message = Entity.all[3].health
     
     # Display
     os.system("clear")

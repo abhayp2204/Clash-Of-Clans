@@ -1,16 +1,18 @@
-from langcodes import LanguageData
+from xml.dom.minidom import Entity
 from .variables import *
+from . import entity
 
 class Building:
     all = []
     walls = []
     
-    def __init__(self, name: str, color, size, max_health):
+    def __init__(self, name: str, letters, color, size, max_health):
         # Validate
         assert max_health > 0, f"Health {max_health} must be > 0"
         
         # Initialize
         self.name = name
+        self.letters = letters
         self.color = color
         self.size = size
         self.max_health = max_health
@@ -39,17 +41,25 @@ class Building:
         char = (self.color + BLOCK) if self.alive else " "  
         for y in range(posY, posY + self.size[1]):
             for x in range(posX*2, posX*2 + self.size[0]*2):
-                CANVAS[y][x] = self.color + BLOCK
+                
+                # Get letter
+                ch = " "
+                if y == int((2*posY + self.size[1]) / 2):
+                    index = x - posX*2
+                    if index < len(self.letters):
+                        ch = self.letters[x - posX*2]
+                        
+                CANVAS[y][x] = self.color + Fore.BLACK + ch + Back.RESET
                 if(self.name == "Wall"):
                     CANVAS[y][x] = Fore.WHITE + BLOCK
                     
                 perc = 100*(self.health/self.max_health)
                 if(perc < 100):
-                    CANVAS[y][x] = Fore.GREEN + BLOCK
+                    CANVAS[y][x] = Back.GREEN + Fore.BLACK + ch + Back.RESET
                 if(perc < 50):
-                    CANVAS[y][x] = Fore.YELLOW + BLOCK
+                    CANVAS[y][x] = Back.YELLOW + Fore.BLACK + ch + Back.RESET
                 if(perc <= 20):
-                    CANVAS[y][x] = Fore.RED + BLOCK
+                    CANVAS[y][x] = Back.RED + Fore.BLACK + ch + Back.RESET
                 if(perc <= 0):
                     CANVAS[y][x] = " "
                 
@@ -67,9 +77,9 @@ class Building:
 class Defender(Building):
     all = []
     
-    def __init__(self, name: str, color, size, max_health, damage, fire_rate, span, land, air):
+    def __init__(self, name: str, letters, color, size, max_health, damage, fire_rate, aoe, span, land, air):
         # Inherit
-        super().__init__(name, color, size, max_health)
+        super().__init__(name, letters, color, size, max_health)
         
         # Validate
         assert damage > 0, f"Damage {damage} must be > 0"
@@ -78,6 +88,7 @@ class Defender(Building):
         # Initialize
         self.damage = damage
         self.fire_rate = fire_rate
+        self.aoe = aoe
         self.span = span
         self.land = land
         self.air = air
@@ -87,9 +98,31 @@ class Defender(Building):
         Defender.all.append(self)
         
     def fire(self, target):
+        # Make sure that the building can attack the target
         if (self.land and target.land) or (self.air and target.air):
-            if(target.alive):
-                target.health -= self.damage
+            
+            # Only attack target
+            if self.aoe == 0:
+                if(target.alive):
+                    target.health -= self.damage
+                th.message = "no aoe"
+                
+            # Attack all troops near target
+            else:
+                tgt = []
+                half = int(self.aoe / 2)
+                for E in entity.Entity.all:
+                    x_span = E.X >= target.X - half*X_SCALE and E.X <= target.X + half*X_SCALE
+                    y_span = E.Y >= target.Y - half and E.Y <= target.Y + half
+                    
+                    if x_span and y_span:
+                        # tgt.append(E)
+                        E.health -= self.damage
+                
+                    th.message = E.health
+                # E = entity.Entity.all[3]
+                    
+            # Overkill
             if(target.health < 0):
                 target.health = 0
             
@@ -110,6 +143,7 @@ class Gold_Mine(Building):
 
 # Instances
 th = Building("Townhall",
+               TOWNHALL_LETTERS,
                TOWNHALL_COLOR,
                TOWNHALL_SIZE,
                TOWNHALL_HEALTH)
