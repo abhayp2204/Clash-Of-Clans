@@ -7,6 +7,9 @@ def get_target(B):
     min = 1000
     target = th
     for b in Building.all:
+        if not b.alive:
+            continue
+        
         d = distance(B, b)
         if(d < min):
             min = d
@@ -34,10 +37,6 @@ def handle_barbarians(timesteps):
         B.move_time = timesteps
         B.move(target)
         
-        # Re-color
-        CANVAS[B.Y][B.X] = B.color + BLOCK
-        CANVAS[B.Y][B.X + 1] = B.color + BLOCK
-        
         # Attempt to attack once every three timesteps
         if(attacking and timesteps != B.attack_time):
             B.attack_time = timesteps
@@ -45,8 +44,7 @@ def handle_barbarians(timesteps):
             
 def handle_archers(timesteps):
     for A in Entity.Archers:
-        
-        # Ignore dead barbarians
+        # Ignore dead archers
         if not A.alive:
             continue
         
@@ -62,16 +60,41 @@ def handle_archers(timesteps):
             continue
         
         A.move_time = timesteps
-        A.move(target)
         
-        # Re-color
-        CANVAS[A.Y][A.X] = A.color + BLOCK
-        CANVAS[A.Y][A.X + 1] = A.color + BLOCK
+        if not attacking:
+            A.move(target)
         
         # Attempt to attack once every three timesteps
         if(attacking and timesteps != A.attack_time):
             A.attack_time = timesteps
             A.attack(target)
+            
+def handle_balloons(timesteps):
+    for B in Entity.Balloons:
+        # Ignore dead archers
+        if not B.alive:
+            continue
+        
+        target = get_target(B)
+        if(B.target_wall != th and B.target_wall.alive):
+            target = B.target_wall
+            
+        attacking = B.within_attack_range(target)
+        
+        if(timesteps == B.move_time):
+            continue
+        if(timesteps % int(6/B.speed) != 0):
+            continue
+        
+        B.move_time = timesteps
+        
+        if not attacking:
+            B.move(target)
+        
+        # Attempt to attack once every three timesteps
+        if(attacking and timesteps != B.attack_time):
+            B.attack_time = timesteps
+            B.attack(target)
     
 def handle_witch(timesteps):
     if not K.alive:
@@ -86,7 +109,7 @@ def handle_witch(timesteps):
             W.attack(K)
             
 def handle_cannons(timesteps):
-    for C in Cannon.all:
+    for C in Defender.all:
         if not C.alive:
             continue
         
@@ -96,6 +119,10 @@ def handle_cannons(timesteps):
             
             for B in Entity.Barbarians:
                 C.in_range(B)
+            for A in Entity.Archers:
+                C.in_range(A)
+            for Bl in Entity.Balloons:
+                C.in_range(Bl)
             C.in_range(K)
             
             if not C.targets:
@@ -115,15 +142,15 @@ def handle_buildings(timesteps):
 def grim_reaper():
     # Buildings
     i = 0
-    for building in Building.all:
-        if(building.alive and building.health <= 0):            
-            building.alive = False
+    for b in Building.all:
+        if(b.alive and b.health <= 0):            
+            b.alive = False
             Building.all.pop(i)
             
             if(not th.alive and not W.alive and not W.killed):
                 trap()
                 
-            building.draw(building.X, building.Y)
+            b.draw(b.X, b.Y)
         i += 1
         
     # Barbarians
@@ -136,7 +163,7 @@ def grim_reaper():
             CANVAS[B.Y][B.X] = " "
             CANVAS[B.Y][B.X + 1] = " "
         i += 1
-        
+    
     # Walls
     i = 0
     for w in Building.walls:
@@ -153,9 +180,9 @@ def trap():
         B.erase()
     
     for y in [6, 24]:
-        for x in range(30, 80):
+        for x in range(20, 60):
             CANVAS[y][x] = Fore.RED + "*"
-    for x in [30, 80]:
+    for x in [20, 60]:
         for y in range(6, 25):
             CANVAS[y][x] = Fore.RED + "*"
     W.draw(38, 22)

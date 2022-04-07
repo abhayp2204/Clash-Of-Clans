@@ -4,28 +4,28 @@ from .spell import *
 from .util import *
 from .setup import *
 
-def input_handler(key, timesteps):
+def input_handler(key, H, timesteps):
     # Game controls
     if(key == "q"):
         end_game(0)
         
     # Disable king controls when dead
-    if not K.alive:
+    if not H.alive:
         return
     
     # King movement
     if(key == "w"):
-        K.move_up()
+        H.move_up()
     if(key == "a"):
-        K.move_left()
+        H.move_left()
     if(key == "s"):
-        K.move_down()
+        H.move_down()
     if(key == "d"):
-        K.move_right()
+        H.move_right()
         
     # Attack
     if(key == " "):
-        K.attack()
+        H.attack()
     if(key == "e"):
         K.use_leviathan_axe()
         
@@ -44,7 +44,7 @@ def input_handler(key, timesteps):
         if(len(Entity.Barbarians) == MAX_BARBARIANS):
             return
         
-        B = Entity("Barbarian", BARBARIAN_COLOR, BARBARIAN_SIZE, BARBARIAN_HEALTH, BARBARIAN_DAMAGE, BARBARIAN_SPEED)
+        B = Entity("Barbarian", BARBARIAN_LETTERS, BARBARIAN_COLOR, BARBARIAN_SIZE, BARBARIAN_HEALTH, BARBARIAN_DAMAGE, BARBARIAN_SPEED, True, False)
         
         B.X = SPAWN_POINT_A[0]
         B.Y = SPAWN_POINT_A[1] + 1
@@ -52,7 +52,7 @@ def input_handler(key, timesteps):
         if(len(Entity.Barbarians) == MAX_BARBARIANS):
             return
         
-        B = Entity("Barbarian", BARBARIAN_COLOR, BARBARIAN_SIZE, BARBARIAN_HEALTH, BARBARIAN_DAMAGE, BARBARIAN_SPEED)
+        B = Entity("Barbarian", BARBARIAN_LETTERS, BARBARIAN_COLOR, BARBARIAN_SIZE, BARBARIAN_HEALTH, BARBARIAN_DAMAGE, BARBARIAN_SPEED, True, False)
         
         B.X = SPAWN_POINT_B[0] - 4
         B.Y = SPAWN_POINT_B[1]
@@ -60,7 +60,7 @@ def input_handler(key, timesteps):
         if(len(Entity.Barbarians) == MAX_BARBARIANS):
             return
         
-        B = Entity("Barbarian", BARBARIAN_COLOR, BARBARIAN_SIZE, BARBARIAN_HEALTH, BARBARIAN_DAMAGE, BARBARIAN_SPEED)
+        B = Entity("Barbarian", BARBARIAN_LETTERS, BARBARIAN_COLOR, BARBARIAN_SIZE, BARBARIAN_HEALTH, BARBARIAN_DAMAGE, BARBARIAN_SPEED, True, False)
         
         B.X = SPAWN_POINT_C[0] + 2
         B.Y = SPAWN_POINT_C[1]
@@ -70,7 +70,7 @@ def input_handler(key, timesteps):
         if(len(Entity.Archers) == MAX_ARCHERS):
             return
         
-        A = Entity("Archer", ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED)
+        A = Entity("Archer", ARCHER_LETTERS, ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED, True, False)
         
         A.X = SPAWN_POINT_A[0]
         A.Y = SPAWN_POINT_A[1] + 1
@@ -78,7 +78,7 @@ def input_handler(key, timesteps):
         if(len(Entity.Archers) == MAX_ARCHERS):
             return
         
-        A = Entity("Archer", ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED)
+        A = Entity("Archer", ARCHER_LETTERS, ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED, True, False)
         
         A.X = SPAWN_POINT_B[0]
         A.Y = SPAWN_POINT_B[1] + 1
@@ -86,7 +86,33 @@ def input_handler(key, timesteps):
         if(len(Entity.Archers) == MAX_ARCHERS):
             return
         
-        A = Entity("Archer", ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED)
+        A = Entity("Archer", ARCHER_LETTERS, ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED, True, False)
+        
+        A.X = SPAWN_POINT_C[0] + 2
+        A.Y = SPAWN_POINT_C[1]
+        
+    # Controls to spawn Balloons
+    if(key == "7"):
+        if(len(Entity.Balloons) == MAX_BALLOONS):
+            return
+        
+        A = Entity("Balloon", BALLOON_LETTERS, BALLOON_COLOR, BALLOON_SIZE, BALLOON_HEALTH, BALLOON_DAMAGE, BALLOON_SPEED, BALLOON_LAND, BALLOON_AIR)
+        
+        A.X = SPAWN_POINT_A[0]
+        A.Y = SPAWN_POINT_A[1] + 1
+    if(key == "8"):
+        if(len(Entity.Balloons) == MAX_BALLOONS):
+            return
+        
+        A = Entity("Balloon", BALLOON_LETTERS, BALLOON_COLOR, BALLOON_SIZE, BALLOON_HEALTH, BALLOON_DAMAGE, BALLOON_SPEED, BALLOON_LAND, BALLOON_AIR)
+        
+        A.X = SPAWN_POINT_B[0]
+        A.Y = SPAWN_POINT_B[1] + 1
+    if(key == "9"):
+        if(len(Entity.Balloons) == MAX_BALLOONS):
+            return
+        
+        A = Entity("Balloon", BALLOON_LETTERS, BALLOON_COLOR, BALLOON_SIZE, BALLOON_HEALTH, BALLOON_DAMAGE, BALLOON_SPEED, BALLOON_LAND, BALLOON_AIR)
         
         A.X = SPAWN_POINT_C[0] + 2
         A.Y = SPAWN_POINT_C[1]

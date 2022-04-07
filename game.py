@@ -14,17 +14,17 @@ from src.stats import *
 
 START_TIME = time.time()
 getch = Get()
-init()
+H = init()
 message = ""
 BUFFER = ""
 timesteps = 0
 
 print(Fore.RED + Back.WHITE + "K")
-end_game(1)
+# end_game(1)
 
 while (True):
     key = input_to(getch)
-    input_handler(key, timesteps)
+    input_handler(key, H, timesteps)
     
     # Rage spell wears off
     if(timesteps > Rage.time + Rage.duration):
@@ -32,6 +32,7 @@ while (True):
     
     handle_barbarians(timesteps)
     handle_archers(timesteps)
+    handle_balloons(timesteps)
     handle_cannons(timesteps)
     handle_buildings(timesteps)
     handle_witch(timesteps)
@@ -43,11 +44,11 @@ while (True):
     
     # Display
     os.system("clear")
-    BUFFER = hud(timesteps)
+    BUFFER = hud(H, timesteps)
     BUFFER = get_canvas(BUFFER)
     print(BUFFER)
     check_game_over()
-    # footer()
+    footer()
     
 # Exit
 print()

@@ -1,3 +1,4 @@
+from http.client import RESET_CONTENT
 from .variables import *
 from .building import *
 from .util import *
@@ -7,13 +8,14 @@ class Entity:
     all = []
     Barbarians = []
     Archers = []
+    Balloons = []
     
     # Class attributes
     damage_rate = 1.0
     health_rate = 1.5
         
     # __init__ is a magic method that gets called whenever an instance is created
-    def __init__(self, name: str, color, size, max_health=100, damage=10, speed=1):    
+    def __init__(self, name: str, letters, color, size, max_health, damage, speed, land, air):    
         # Validate
         assert max_health > 0, f"Health {max_health} must be > 0"
         assert damage >= 0, f"Damage {damage} must be >= 0"
@@ -21,12 +23,15 @@ class Entity:
         
         # Initialize
         self.name = name
+        self.letters = letters
         self.color = color
         self.size = size
         self.max_health = max_health
         self.health = max_health
         self.damage = damage
         self.speed = speed
+        self.land = land
+        self.air = air
         self.alive = True
         self.target_wall = th
         self.clearing_path = False
@@ -44,8 +49,10 @@ class Entity:
         
         if(name == "Barbarian"):
             Entity.Barbarians.append(self)
-        if(name == "Archer"):
+        elif(name == "Archer"):
             Entity.Archers.append(self)
+        elif(name == "Balloon"):
+            Entity.Balloons.append(self)
 
     def draw(self, posX, posY): 
         if(X_SCALE*(posX + self.size[0]) >= CANVAS_WIDTH):
@@ -56,22 +63,26 @@ class Entity:
         self.X = posX*X_SCALE
         self.Y = posY
                 
-        char = (self.color + BLOCK) if self.alive else " "
-        for y in range(posY, posY + self.size[1]):
-            for x in range(posX*X_SCALE, posX*X_SCALE + self.size[0]*X_SCALE):
-                CANVAS[y][x] = char
+        # char = (self.color + BLOCK) if self.alive else " "
+        for i in range(self.size[0]*X_SCALE):
+            char = KING_BGCOLOR + Fore.BLACK + self.letters[i] + Back.RESET
+            CANVAS[self.Y][self.X + i] = char
                 
     def erase(self):
         CANVAS[self.Y][self.X] = " "
         CANVAS[self.Y][self.X + 1] = " "
 
     def move(self, target):
+        # Move = Erase -> Change Location -> Redraw
         def erase():
-            CANVAS[self.Y][self.X] = " "
-            # CANVAS[self.Y][self.X + 1] = " "
+            for i in range(X_SCALE):
+                CANVAS[self.Y][self.X + i] = " "
         def redraw():
-            CANVAS[self.Y][self.X] = self.color + BLOCK
-            # CANVAS[self.Y][self.X + 1] = self.color + BLOCK
+            for i in range(X_SCALE):
+                if(self.name == "Balloon"):
+                    CANVAS[self.Y][self.X + i] = self.color + Fore.WHITE + self.letters[i] + Back.RESET
+                    continue
+                CANVAS[self.Y][self.X + i] = self.color + Fore.BLACK + self.letters[i] + Back.RESET
             
         def move_up():
             erase()
@@ -80,29 +91,56 @@ class Entity:
         def move_down():
             erase()
             self.Y += 1
-            redraw()
+            redraw()  
         def move_left():
             erase()
             self.X -= X_SCALE
-            redraw()
+            redraw() 
         def move_right():
             erase()
             self.X += X_SCALE
             redraw()
         
-            
+        # Entity destroys the wall it was attacking
         if(not self.target_wall.alive):
             self.clearing_path = False
             
+        # Redraw the block under aerial troops
+        if self.air:
+            if len(PREV_BUILDING):
+                b = PREV_BUILDING[0]
+                if b.alive:
+                    for i in range(len(PREV)):
+                        for x in range(X_SCALE):
+                            CANVAS[b.Y][b.X + x] = PREV[i]
+            
+        # Targeting a Building
         if(self != W):
-            if(target.X*X_SCALE > self.X):
+            if(target.X * X_SCALE > self.X):    
                 ch = CANVAS[self.Y][self.X + X_SCALE]
-                if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
+                if self.air:
                     move_right()
-            elif(target.X*X_SCALE < self.X):
+                    
+                    # Keep track of the block under aerial troops
+                    PREV.append(ch)
+                    PREV_X.append(self.X)
+                    PREV_Y.append(self.Y)
+                else:
+                    if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
+                        move_right()
+            elif(target.X * X_SCALE < self.X):
                 ch = CANVAS[self.Y][self.X - X_SCALE]
-                if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
+                if self.air:
                     move_left()
+                else:
+                    if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
+                        move_left()
+                    
+            for b in Building.all:
+                if b.X == int(self.X/2) and b.Y == self.Y - 1:
+                    PREV_BUILDING.append(b)
+                    
+        # Targetting an Entity
         else:
             if(target.X > self.X):
                 ch = CANVAS[self.Y][self.X + X_SCALE]
@@ -113,27 +151,47 @@ class Entity:
                 if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                     move_left()
                 
+        # Targetting Building or Entity
         if(target.Y > self.Y):
             ch = CANVAS[self.Y + 1][self.X]
-            if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
+            if self.air:
                 move_down()
+                
+                # Keep track of the block under aerial troops
+                PREV.append(ch)
+                PREV_X.append(self.X)
+                PREV_Y.append(self.Y)
+            else:         
+                if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
+                    move_down()
         elif(target.Y < self.Y):
             ch = CANVAS[self.Y - 1][self.X]
-            if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
+            if self.air:
                 move_up()
                 
-        if(target.X*X_SCALE > self.X): 
+                # Keep track of the block under aerial troops
+                PREV.append(ch)
+                PREV_X.append(self.X)
+                PREV_Y.append(self.Y)
+            else:
+                if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
+                    move_up()
+                
+        if(self.name == "Balloon"):
+            return
+                
+        # If a wall is the way, set that wall as the target
+        if(target.X * X_SCALE > self.X): 
             if(ch == WALL_COLOR + BLOCK):
                 for w in Building.walls:
-                    if(self.Y == w.Y and self.X + X_SCALE == w.X*X_SCALE):
+                    if(self.Y == w.Y and self.X + X_SCALE == w.X * X_SCALE):
                         self.target_wall = w
                         self.clearing_path = True
-                        # w.health = -1
                         return
         elif(target.X*X_SCALE < self.X): 
             if(ch == WALL_COLOR + BLOCK):
                 for w in Building.walls:
-                    if(self.Y == w.Y and self.X - X_SCALE == w.X*X_SCALE):
+                    if(self.Y == w.Y and self.X - X_SCALE == w.X * X_SCALE):
                         self.target_wall = w
                         self.clearing_path = True
                         return
@@ -155,11 +213,28 @@ class Entity:
                         return
     
     def within_attack_range(self, target):
+        if not target.alive:
+            return
+        
         dx = int((target.X - self.X/X_SCALE))
         if(self == W):
             dx = int((target.X - self.X)/X_SCALE)
             
         dy = (target.Y - self.Y)
+        
+        if(self.name == "Archer"):
+            self.damage = ARCHER_DAMAGE
+            dist = dx**2 + dy**2
+            
+            if(dist < 100):
+                return True
+            
+        if(self.name == "Balloon"):
+            if (dx <= 0 and dx > -target.size[0]) and (dy <= 0 and dy > -target.size[1]):
+                return True
+            else:
+                return False
+            
         
         # Far
         if(dx > 1 or dx < -target.size[0] or dy > 1 or dy < -target.size[1]):
@@ -175,6 +250,8 @@ class Entity:
         return True
 
     def attack(self, target):
+        if not target.alive:
+            return
         target.health -= self.damage
             
     def apply_rage_spell(self):
@@ -192,9 +269,9 @@ class Entity:
         return f"{self.name}"
     
 class King(Entity):
-    def __init__(self, name: str, color, size, max_health, damage, speed, axe_damage, axe_area):
+    def __init__(self, name: str, letters, color, size, max_health, damage, speed, land, air, axe_damage, axe_area):
         # Inherit
-        super().__init__(name, color, size, max_health, damage, speed)
+        super().__init__(name, letters, color, size, max_health, damage, speed, land, air)
         
         # Validate
         assert axe_damage > 0, f"Damage {axe_damage} must be > 0"
@@ -208,11 +285,11 @@ class King(Entity):
         
     def clear(self):
         for i in range(X_SCALE):
-                CANVAS[self.Y][self.X + i] = " "
+            CANVAS[self.Y][self.X + i] = " "
                 
     def paint(self):
         for i in range(X_SCALE):
-            CANVAS[self.Y][self.X + i] = self.color + BLOCK
+            CANVAS[self.Y][self.X + i] = Back.BLUE + Fore.BLACK + self.letters[i] + Back.RESET
         
     def move_up(self):
         if not self.alive:
@@ -277,12 +354,12 @@ class King(Entity):
             ch = CANVAS[self.Y - 1][self.X]
             if(ch != " "):
                 for building in Building.all:
-                    if not(self.X >= building.X*2 and self.X < (building.X + building.size[0])*2):
+                    if not(self.X >= building.X * X_SCALE and self.X < (building.X + building.size[0]) * X_SCALE):
                         continue
                     if(self.Y == building.Y + building.size[1]):
                         building.health -= KING_DAMAGE
                 for w in Building.walls:
-                    if not(self.X >= w.X*2 and self.X < (w.X + w.size[0])*2):
+                    if not(self.X >= w.X * X_SCALE and self.X < (w.X + w.size[0]) * X_SCALE):
                         continue
                     if(self.Y == w.Y + w.size[1]):
                         w.health -= KING_DAMAGE
@@ -291,42 +368,42 @@ class King(Entity):
             ch = CANVAS[self.Y + 1][self.X]
             if(ch != " "):
                 for building in Building.all:
-                    if not(self.X >= building.X*2 and self.X < (building.X + building.size[0])*2):
+                    if not(self.X >= building.X * X_SCALE and self.X < (building.X + building.size[0])* X_SCALE):
                         continue
                     if(self.Y + 1 == building.Y):
                         building.health -= KING_DAMAGE
                 for w in Building.walls:
-                    if not(self.X >= w.X*2 and self.X < (w.X + w.size[0])*2):
+                    if not(self.X >= w.X * X_SCALE and self.X < (w.X + w.size[0]) * X_SCALE):
                         continue
                     if(self.Y + 1 == w.Y):
                         w.health -= KING_DAMAGE
                         
         if(self.direction == EAST):
-            ch = CANVAS[self.Y][self.X + 2]
+            ch = CANVAS[self.Y][self.X + X_SCALE]
             if(ch != " "):
                 for building in Building.all:
                     if not(self.Y >= building.Y and self.Y < (building.Y + building.size[1])*2):
                         continue
-                    if(self.X + 2 == building.X*2):
+                    if(self.X + X_SCALE == building.X*X_SCALE):
                         building.health -= KING_DAMAGE
                 for w in Building.walls:
                     if not(self.Y == w.Y):
                         continue
-                    if(self.X + 2 == w.X*2):
+                    if(self.X + X_SCALE == w.X*X_SCALE):
                         w.health -= KING_DAMAGE
                         
         if(self.direction == WEST):
-            ch = CANVAS[self.Y][self.X - 2]
+            ch = CANVAS[self.Y][self.X - X_SCALE]
             if(ch != " "):
                 for building in Building.all:
                     if not(self.Y >= building.Y and self.Y < (building.Y + building.size[1])*2):
                         continue
-                    if(self.X == building.X*2 + building.size[0]*2):
+                    if(self.X == building.X*X_SCALE + building.size[0]*X_SCALE):
                         building.health -= KING_DAMAGE
                 for w in Building.walls:
                     if not(self.Y >= w.Y and self.Y < (w.Y + w.size[1])*2):
                         continue
-                    if(self.X == w.X*2 + w.size[0]*2):
+                    if(self.X == w.X*2 + w.size[0]*X_SCALE):
                         w.health -= KING_DAMAGE
                 
     def use_leviathan_axe(self):
@@ -359,20 +436,180 @@ class King(Entity):
             if(W.health <= 0):
                 W.killed = True
                 untrap()
+                
+class Queen(Entity):
+    def __init__(self, name: str, letters, color, size, max_health, damage, speed, land, air, aoe, arrow_distance):
+        # Inherit
+        super().__init__(name, letters, color, size, max_health, damage, speed, land, air)
+        
+        # Validate
+        assert aoe > 0, f"Damage {aoe} must be > 0"
+        assert arrow_distance > 0, f"Fire Rate {arrow_distance} must be > 0"
+        
+        # Initialize
+        self.health = max_health
+        self.aoe = aoe
+        self.arrow_distance = arrow_distance
+        self.direction = EAST
+        
+    def clear(self):
+        for i in range(X_SCALE):
+            CANVAS[self.Y][self.X + i] = " "
+                
+    def paint(self):
+        for i in range(X_SCALE):
+            CANVAS[self.Y][self.X + i] = Back.BLUE + Fore.BLACK + self.letters[i] + Back.RESET
+        
+    def move_up(self):
+        if not self.alive:
+            return
+        
+        self.direction = NORTH
+        if(CANVAS[self.Y - 1][self.X] != " "):
+            return False
+                  
+        self.clear()
+        self.Y -= 1
+        self.paint()
+        
+        return True
+        
+    def move_left(self):
+        if not self.alive:
+            return
+        
+        self.direction = WEST
+        
+        for i in range(X_SCALE):
+            if(CANVAS[self.Y][self.X - i - 1] != " "):
+                return False
+        
+        self.clear()
+        self.X -= X_SCALE
+        self.paint()
+        
+        return True
+        
+    def move_down(self):
+        if not self.alive:
+            return
+        
+        self.direction = SOUTH
+        if(CANVAS[self.Y + 1][self.X] != " "):
+            return False
+        
+        self.clear()
+        self.Y += 1
+        self.paint()
+        
+        return True
+        
+    def move_right(self):
+        if not self.alive:
+            return
+        
+        self.direction = EAST
+        if(CANVAS[self.Y][self.X + X_SCALE*2 - 1] != " "):
+            return False
+        
+        self.clear()
+        self.X += X_SCALE
+        self.paint()
+        
+        return True
+        
+    def attack(self):
+        if(self.direction == NORTH):
+            target_X = self.X
+            target_Y = self.Y - self.arrow_distance
+            
+            half = int(self.aoe / 2)
+            
+            for y in range(target_Y - half, target_Y + half + 1):
+                for x in range(target_X - half*X_SCALE, target_X + half*X_SCALE + 1):
+                    for i in range(X_SCALE):
+                        # CANVAS[y][x + i] = BLOCK
+                        for B in Building.all:
+                            if B.contains_cell(x, y):
+                                B.health -= QUEEN_DAMAGE
+
+        if(self.direction == SOUTH):
+            target_X = self.X
+            target_Y = self.Y + self.arrow_distance
+            
+            half = int(self.aoe / 2)
+            
+            for y in range(target_Y - half, target_Y + half + 1):
+                for x in range(target_X - half*X_SCALE, target_X + half*X_SCALE + 1):
+                    for i in range(X_SCALE):
+                        # CANVAS[y][x + i] = BLOCK
+                        for B in Building.all:
+                            if B.contains_cell(x, y):
+                                B.health -= QUEEN_DAMAGE
+                        
+        if(self.direction == EAST):
+            target_X = self.X + (self.arrow_distance * X_SCALE)
+            target_Y = self.Y
+            
+            half = int(self.aoe / 2)
+            
+            for y in range(target_Y - half, target_Y + half + 1):
+                for x in range(target_X - half*X_SCALE, target_X + half*X_SCALE + 1):
+                    for i in range(X_SCALE):
+                        # CANVAS[y][x + i] = BLOCK
+                        for B in Building.all:
+                            if B.contains_cell(x, y):
+                                B.health -= QUEEN_DAMAGE/2
+                        
+        if(self.direction == WEST):
+            target_X = self.X - (self.arrow_distance * X_SCALE)
+            target_Y = self.Y
+            
+            half = int(self.aoe / 2)
+            
+            for y in range(target_Y - half, target_Y + half + 1):
+                for x in range(target_X - half*X_SCALE, target_X + half*X_SCALE + 1):
+                    for i in range(X_SCALE):
+                        # CANVAS[y][x + i] = BLOCK
+                        for B in Building.all:
+                            if B.contains_cell(x, y):
+                                B.health -= QUEEN_DAMAGE
+                                
+                                
     
 K = King("Barbarian King",
+         KING_LETTERS,
          KING_COLOR,
          KING_SIZE,
          KING_HEALTH,
          KING_DAMAGE,
          KING_SPEED,
+         True,
+         False,
          KING_AXE_DAMAGE,
          KING_AXE_AREA)
 
+
+Q = Queen("Archer Queen",
+         QUEEN_LETTERS,
+         QUEEN_COLOR,
+         QUEEN_SIZE,
+         QUEEN_HEALTH,
+         QUEEN_DAMAGE,
+         QUEEN_SPEED,
+         True,
+         False,
+         QUEEN_AOE,
+         QUEEN_ARROW_DISTANCE)
+
+
 W = Entity("Witch",
+           WITCH_LETTERS,
            WITCH_COLOR,
            WITCH_SIZE,
            WITCH_HEALTH,
            WITCH_DAMAGE,
-           WITCH_SPEED)
+           WITCH_SPEED,
+           True,
+           False)
 W.alive = False

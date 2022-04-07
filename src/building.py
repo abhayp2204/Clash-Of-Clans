@@ -1,3 +1,4 @@
+from langcodes import LanguageData
 from .variables import *
 
 class Building:
@@ -27,7 +28,7 @@ class Building:
         Building.all.append(self)
         
     def draw(self, posX, posY): 
-        if(2*(posX + self.size[0]) >= CANVAS_WIDTH):
+        if(X_SCALE*(posX + self.size[0]) >= CANVAS_WIDTH):
             return
         if(posY + self.size[1] >= CANVAS_HEIGHT):
             return
@@ -52,14 +53,21 @@ class Building:
                 if(perc <= 0):
                     CANVAS[y][x] = " "
                 
+    def contains_cell(self, X, Y):
+        for y in range(self.Y, self.Y + self.size[1]):
+            for x in range(self.X, self.X + self.size[0]):
+                if(x*2 == X and y == Y):
+                    return True
+        return False
+                
     def __repr__(self):
         return f"{self.name}"
 
 # Cannon: Inherits from Building
-class Cannon(Building):
+class Defender(Building):
     all = []
     
-    def __init__(self, name: str, color, size, max_health, damage, fire_rate, span):
+    def __init__(self, name: str, color, size, max_health, damage, fire_rate, span, land, air):
         # Inherit
         super().__init__(name, color, size, max_health)
         
@@ -71,16 +79,19 @@ class Cannon(Building):
         self.damage = damage
         self.fire_rate = fire_rate
         self.span = span
+        self.land = land
+        self.air = air
         self.fire_time = 0
         self.targets = []
         
-        Cannon.all.append(self)
+        Defender.all.append(self)
         
     def fire(self, target):
-        if(target.alive):
-            target.health -= self.damage
-        if(target.health < 0):
-            target.health = 0
+        if (self.land and target.land) or (self.air and target.air):
+            if(target.alive):
+                target.health -= self.damage
+            if(target.health < 0):
+                target.health = 0
             
     def in_range(self, troop):
         within_x_span = (troop.X > (self.X - self.size[0] - self.span)*2) and (troop.X < (self.X + self.size[0] + self.span)*2)
