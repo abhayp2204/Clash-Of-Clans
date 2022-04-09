@@ -246,7 +246,45 @@ def setup_walls(level):
         walls[i].draw(2, 5)
         i += 1
         walls[i].draw(1, 5)
-        i += 1           
+        i += 1   
+        
+    def boxhead(i):
+        # Horizontal lines
+        for x in range(15, 25):
+            walls[i].draw(x, 9)
+            i += 1
+            walls[i].draw(x, 19)
+            i += 1
+            
+        # Vertical lines
+        for y in range(11, 18):
+            walls[i].draw(14, y)
+            i += 1
+            walls[i].draw(25, y)
+            i += 1
+            
+        # Bars
+        for x in [15, 18, 21, 24]:
+            for y in range(10, 12):
+                walls[i].draw(x, y)
+                i += 1
+            for y in range(17, 19):
+                walls[i].draw(x, y)
+                i += 1
+                
+        # Filler
+        walls[i].draw(15, 14)
+        i += 1
+        walls[i].draw(16, 14)
+        i += 1
+        walls[i].draw(23, 14)
+        i += 1
+        walls[i].draw(24, 14)
+        i += 1
+        
+        return i
+        
+    
 
     i = surround_townhall(0)
     
@@ -254,7 +292,8 @@ def setup_walls(level):
         i = arms(i)
         i = surround_spawn_point_1(i)
 
-                
-                
-                
-    
+    if level == 2:
+        i = boxhead(i)
+        
+    if level == 3:
+        i = arms(i)

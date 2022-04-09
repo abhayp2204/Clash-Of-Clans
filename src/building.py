@@ -55,7 +55,7 @@ class Building:
                     if index < len(self.letters):
                         ch = self.letters[x - posX*2]
                         
-                CANVAS[y][x] = self.color + Fore.BLACK + ch + Back.RESET
+                CANVAS[y][x] = self.color + Fore.BLACK + ch + Back.RESET + Fore.RESET
                 if(self.name == "Wall"):
                     CANVAS[y][x] = Fore.WHITE + BLOCK
                     

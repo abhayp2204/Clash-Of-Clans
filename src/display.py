@@ -66,7 +66,7 @@ def set_border():
         CANVAS[y][CANVAS_WIDTH-1] = "║"
         
     # Corners
-    CANVAS[0][0] = "╔"
-    CANVAS[0][CANVAS_WIDTH-1] = "╗"
-    CANVAS[CANVAS_HEIGHT-1][0] = "╚"
-    CANVAS[CANVAS_HEIGHT-1][CANVAS_WIDTH - 1] = "╝"
+    CANVAS[0][0] = Fore.WHITE + "╔"
+    CANVAS[0][CANVAS_WIDTH-1] = Fore.WHITE + "╗"
+    CANVAS[CANVAS_HEIGHT-1][0] = Fore.WHITE + "╚"
+    CANVAS[CANVAS_HEIGHT-1][CANVAS_WIDTH - 1] = Fore.WHITE + "╝"
