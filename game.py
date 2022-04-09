@@ -14,17 +14,17 @@ from src.stats import *
 
 START_TIME = time.time()
 getch = Get()
-H = init()
+H = select_hero()
+init(H, 1)
 message = ""
 BUFFER = ""
 timesteps = 0
 
 print(Fore.RED + Back.WHITE + "K")
-# end_game(1)
 
 while (True):
     key = input_to(getch)
-    H = input_handler(key, H, timesteps)
+    input_handler(key, H, timesteps)
     
     # Rage spell wears off
     if(timesteps > Rage.time + Rage.duration):
@@ -36,7 +36,7 @@ while (True):
     handle_cannons(H, timesteps)
     handle_wizard_towers(H, timesteps)
     handle_buildings(timesteps)
-    handle_witch(timesteps)
+    handle_witch(H, timesteps)
     grim_reaper()
     
     current_time = time.time()
@@ -50,8 +50,3 @@ while (True):
     print(BUFFER)
     check_game_over()
     footer()
-    
-# Exit
-print()
-show_cursor()
-os.system("stty echo")

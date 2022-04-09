@@ -96,8 +96,8 @@ def handle_balloons(timesteps):
             B.attack_time = timesteps
             B.attack(target)
     
-def handle_witch(timesteps):
-    if not K.alive:
+def handle_witch(H, timesteps):
+    if not H.alive:
         end_game(0)
     
     W.damage = WITCH_DAMAGE
@@ -123,6 +123,8 @@ def handle_cannons(H, timesteps):
                 C.in_range(A)
             for Bl in Entity.Balloons:
                 C.in_range(Bl)
+            
+            
             C.in_range(H)
             
             if not C.targets:

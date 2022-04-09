@@ -5,6 +5,7 @@ from . import entity
 class Building:
     all = []
     walls = []
+    huts = []
     
     def __init__(self, name: str, letters, color, size, max_health):
         # Validate
@@ -19,14 +20,19 @@ class Building:
         self.health = max_health
         self.alive = True
         self.message = ""
+        self.level = 1
         
         # Position
         self.X = 0
         self.Y = 0
         
-        if(name == "Wall"):
+        if name == "Wall":
             Building.walls.append(self)
             return
+        
+        if name == "Hut":
+            Building.huts.append(self)
+            
         Building.all.append(self)
         
     def draw(self, posX, posY): 
@@ -76,6 +82,8 @@ class Building:
 # Cannon: Inherits from Building
 class Defender(Building):
     all = []
+    cannons = []
+    wizard_towers = []
     
     def __init__(self, name: str, letters, color, size, max_health, damage, fire_rate, aoe, span, land, air):
         # Inherit
@@ -96,6 +104,11 @@ class Defender(Building):
         self.targets = []
         
         Defender.all.append(self)
+        
+        if self.name == "Cannons":
+            Defender.cannons.append(self)
+        if self.name == "Wizard Tower":
+            Defender.wizard_towers.append(self)
         
     def fire(self, target):
         # Make sure that the building can attack the target

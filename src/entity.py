@@ -49,9 +49,6 @@ class Entity:
             Entity.Archers.append(self)
         elif(name == "Balloon"):
             Entity.Balloons.append(self)
-    
-    def __del__(self):
-        print("deleted")
 
     def draw(self, posX, posY): 
         if(X_SCALE*(posX + self.size[0]) >= CANVAS_WIDTH):

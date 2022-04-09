@@ -8,6 +8,11 @@ def exit_game():
     os.system("stty echo")
     print(message)
     
+def reset_canvas():
+    for y in range(CANVAS_HEIGHT):
+        for x in range(CANVAS_WIDTH):
+            CANVAS[y][x] = " "
+    
 def untrap():
     for y in [6, 24]:
         for x in range(30, 80):

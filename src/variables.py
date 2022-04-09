@@ -93,6 +93,26 @@ GOLD_NUM = 4
 GOLD_SIZE = (2, 2)
 GOLD_COLOR = Back.YELLOW
 GOLD_HEALTH = 250
+GOLD_POSITIONS = [
+    # Level 1
+    [
+        (18, 10),
+        (20, 17),
+        (15, 15),
+        (23, 12)
+    ],
+    # Level 2
+    [
+        (16, 10),
+        (22, 10),
+        (16, 17),
+        (22, 17)
+    ],
+    # Level 3
+    [
+        (20, 10)
+    ]
+]
 
 # Cannons
 CANNON_LETTERS = "Cann"
@@ -104,6 +124,23 @@ CANNON_DAMAGE = 30
 CANNON_FIRE_RATE = 0.5
 CANNON_SPAN = 5
 CANNON_AOE = 0
+CANNON_POSITIONS = [
+    # Level 1
+    [
+        (15, 13),
+        (23, 14)
+    ],
+    # Level 2
+    [
+        (19, 10),
+        (23, 15),
+        (15, 15)
+    ],
+    # Level 3
+    [
+        (20, 10)
+    ]
+]
 
 # Wizard Tower
 WIZARD_LETTERS = "WzTw"
@@ -115,6 +152,24 @@ WIZARD_DAMAGE = CANNON_DAMAGE
 WIZARD_FIRE_RATE = 0.5
 WIZARD_SPAN = 5
 WIZARD_AOE = 3
+WIZARD_POSITIONS = [
+    # Level 1
+    [
+        (18, 17),
+        (20, 10)
+    ],
+    # Level 2
+    [
+        (19, 17),
+        (15, 12),
+        (23, 12)
+    ],
+    # Level 3
+    [
+        (18, 17),
+        (20, 10)
+    ]
+]
 
 # WALL
 WALL_LETTERS = ""

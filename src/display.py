@@ -29,6 +29,7 @@ def hud(H, timesteps):
     #     BUFFER += C.color + "   Cannon " + str(i+1) + ": " + "*"*c + " "*(int(C.max_health/hu) - c)
         
     BUFFER += Fore.YELLOW + "   Buildings: " + str(len(Building.all))
+    BUFFER += Fore.WHITE + "   Level: " + str(th.level)
     BUFFER += Fore.GREEN + "\nHeal spells: " + str(Heal.number)
     
     BUFFER += Fore.RED + "   Rage spells: " + str(Rage.number)
@@ -43,7 +44,7 @@ def footer():
     pass
     # print("Troops = ", Entity.all)
     # print("Buildings = ", Building.all)
-    # print("Message = ", th.message)
+    print("Message = ", th.message)
          
 def get_canvas(BUFFER):
     # Use buffer to avoid flickering

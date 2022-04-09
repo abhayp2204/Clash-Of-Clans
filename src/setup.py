@@ -3,7 +3,7 @@ from .variables import *
 from .input import *
 from .util import *
 
-def init():
+def init(H, level):
     # Color codes don't work on Windows without this command
     # Autoreset: Avoid clearing color everytime
     colorama.init(autoreset=True)
@@ -13,11 +13,6 @@ def init():
     os.system("stty -echo")
     hide_cursor()
     
-    # Reset Canvas
-    for y in range(CANVAS_HEIGHT):
-        for x in range(CANVAS_WIDTH):
-            CANVAS[y][x] = " "
-
     # Setup village
     set_border()
     
@@ -25,43 +20,54 @@ def init():
     th.draw(int((CENTER_X - TOWNHALL_SIZE[0])/X_SCALE), CENTER_Y - int(TOWNHALL_SIZE[1]/2))  
 
     # Huts
-    for i in range(0, NUM_HUTS):
-        H = Building("Hut", HUT_LETTERS, HUT_COLOR, HUT_SIZE, HUT_HEALTH)
-        H.draw(HUT_POSITIONS[i][0], HUT_POSITIONS[i][1])
+    if(level == 1):
+        for i in range(0, NUM_HUTS):
+            Ht = Building("Hut", HUT_LETTERS, HUT_COLOR, HUT_SIZE, HUT_HEALTH)
+            Ht.draw(HUT_POSITIONS[i][0], HUT_POSITIONS[i][1])
+            
+    if(level == 2):
+        for Ht in Building.huts:
+            Ht.X = 4
+            Ht.Y = 12
+        
+    # Wizard Towers
+    for i in range(0, len(WIZARD_POSITIONS[th.level - 1])):
+        W = Defender("Wizard Tower",
+                    WIZARD_LETTERS,
+                    WIZARD_COLOR,
+                    WIZARD_SIZE,
+                    WIZARD_HEALTH,
+                    WIZARD_DAMAGE,
+                    WIZARD_FIRE_RATE,
+                    WIZARD_AOE,
+                    WIZARD_SPAN,
+                    True,
+                    False)
+        W.draw(WIZARD_POSITIONS[th.level - 1][i][0], WIZARD_POSITIONS[th.level - 1][i][1])
         
     # Cannons
-    cannon = [Defender("Cannon",
-                     CANNON_LETTERS,
-                     CANNON_COLOR,
-                     CANNON_SIZE,
-                     CANNON_HEALTH,
-                     CANNON_DAMAGE,
-                     CANNON_FIRE_RATE,
-                     CANNON_AOE,
-                     CANNON_SPAN,
-                     True,
-                     False)
-                for _ in range(0, CANNON_NUM)]
-    
-    cannon[0].draw(th.X - CANNON_SIZE[0] - 1, th.Y)
-    cannon[1].draw(th.X + th.size[0] + 1, th.Y + th.size[1] - cannon[1].size[1])
-    
-    # Wizard Towers
-    wt = [Defender("Wizard Tower",
-                     WIZARD_LETTERS,
-                     WIZARD_COLOR,
-                     WIZARD_SIZE,
-                     WIZARD_HEALTH,
-                     WIZARD_DAMAGE,
-                     WIZARD_FIRE_RATE,
-                     WIZARD_AOE,
-                     WIZARD_SPAN,
-                     True,
-                     False)
-                for _ in range(0, WIZARD_NUM)]
-    
-    wt[0].draw(th.X, th.Y + th.size[1] + 1)
-    wt[1].draw(th.X + th.size[0] - wt[1].size[0], th.Y - wt[1].size[1] - 1)
+    for i in range(0, len(CANNON_POSITIONS[th.level - 1])):
+        C = Defender("Cannon",
+                    CANNON_LETTERS,
+                    CANNON_COLOR,
+                    CANNON_SIZE,
+                    CANNON_HEALTH,
+                    CANNON_DAMAGE,
+                    CANNON_FIRE_RATE,
+                    CANNON_AOE,
+                    CANNON_SPAN,
+                    True,
+                    False)
+        C.draw(CANNON_POSITIONS[th.level - 1][i][0], CANNON_POSITIONS[th.level - 1][i][1])
+        
+    # Gold Storage
+    for i in range(0, len(GOLD_POSITIONS[th.level - 1])):
+        C = Building("Gold",
+                    GOLD_LETTERS,
+                    GOLD_COLOR,
+                    GOLD_SIZE,
+                    GOLD_HEALTH)
+        C.draw(GOLD_POSITIONS[th.level - 1][i][0], GOLD_POSITIONS[th.level - 1][i][1])
         
     # Spawn Points
     for i in range(NUM_SPAWN_POINTS):
@@ -71,28 +77,11 @@ def init():
         
         for i in range(X_SCALE):
             CANVAS[y][x+i] = SPAWN_POINT_COLOR + Fore.WHITE + SPAWN_POINT_LETTERS[i] + Back.RESET
-        
-    # Gold Storage
-    gold_storage = [Building("Gold Storage",
-                              GOLD_LETTERS,
-                              GOLD_COLOR,
-                              GOLD_SIZE,
-                              GOLD_HEALTH)
-                        for _ in range(0, GOLD_NUM)]
-                        
-    gold_storage[0].draw(18, 10)
-    gold_storage[1].draw(20, 17)
-    gold_storage[2].draw(15, 15)
-    gold_storage[3].draw(23, 12)
-        
-    setup_walls(wt)
     
-    right = select_hero()
-    H = Q if right else K
+    setup_walls(th.level)
+    
     H.draw(4, 10)
     H.health = H.max_health
-    
-    return H
 
 def select_hero():
     stars = 20
@@ -108,20 +97,23 @@ def select_hero():
             print()
         print(Fore.CYAN + "Who would you like to play as? (Space to toggle, C to choose)")
         print()
-        print(Fore.RED + "Barbarian King" + " "*gap + Fore.MAGENTA + "Archer Queen")
+        print(Fore.RED + "Barbarian King" + " "*gap + Fore.MAGENTA + "Archer Queen" + Fore.RESET)
         if right:
             print(" "*(len("Barbarian King") + gap), end="")
         print("-" * (len("Archer Queen") if right else len("Barbarian King")))
         
         key = input_to(getch)
+        if not key is None:
+            key = key.lower()
         n = select_hero_controls(key)
         
         if n == 101:
             right = not right
         elif n == 102:
             break
-            
-    return right
+        
+    H = Q if right else K
+    return H
 
 def select_hero_controls(key):
     if key == " ":
@@ -163,7 +155,7 @@ def end_game(status):
     
     exit()
     
-def setup_walls(cannon):
+def setup_walls(level):
     # Wall
     walls = []
     for i in range(200):
@@ -177,6 +169,8 @@ def setup_walls(cannon):
     # Y border
     TOP_Y = th.Y - 1
     BOT_Y = th.Y + th.size[1]
+    
+    
     
     
     def surround_townhall(i):
@@ -232,26 +226,35 @@ def setup_walls(cannon):
             
         return i
             
+    def surround_spawn_point_1(i): 
+        walls[i].draw(6, 1)
+        i += 1
+        walls[i].draw(6, 2)
+        i += 1
+        walls[i].draw(6, 3)
+        i += 1
+        walls[i].draw(6, 4)
+        i += 1
+        walls[i].draw(6, 5)
+        i += 1
+        walls[i].draw(5, 5)
+        i += 1
+        walls[i].draw(4, 5)
+        i += 1
+        walls[i].draw(3, 5)
+        i += 1
+        walls[i].draw(2, 5)
+        i += 1
+        walls[i].draw(1, 5)
+        i += 1           
+
     i = surround_townhall(0)
-    i = arms(i)
+    
+    if level == 1:
+        i = arms(i)
+        i = surround_spawn_point_1(i)
+
                 
-    walls[i].draw(6, 1)
-    i += 1
-    walls[i].draw(6, 2)
-    i += 1
-    walls[i].draw(6, 3)
-    i += 1
-    walls[i].draw(6, 4)
-    i += 1
-    walls[i].draw(6, 5)
-    i += 1
-    walls[i].draw(5, 5)
-    i += 1
-    walls[i].draw(4, 5)
-    i += 1
-    walls[i].draw(3, 5)
-    i += 1
-    walls[i].draw(2, 5)
-    i += 1
-    walls[i].draw(1, 5)
-    i += 1
+                
+                
+    
