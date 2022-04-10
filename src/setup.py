@@ -17,6 +17,8 @@ def init(H, level):
     set_border()
     
     # Townhall
+    th.health = th.max_health
+    th.alive = True
     th.draw(int((CENTER_X - TOWNHALL_SIZE[0])/X_SCALE), CENTER_Y - int(TOWNHALL_SIZE[1]/2))  
 
     # Huts
@@ -42,7 +44,7 @@ def init(H, level):
                     WIZARD_AOE,
                     WIZARD_SPAN,
                     True,
-                    False)
+                    True)
         W.draw(WIZARD_POSITIONS[th.level - 1][i][0], WIZARD_POSITIONS[th.level - 1][i][1])
         
     # Cannons
@@ -123,9 +125,9 @@ def select_hero_controls(key):
     elif key == "q":
         end_game(0)
     
-def check_game_over():
+def check_game_over(H):
     if not len(Building.all) and not W.alive:
-        end_game(1)
+        next_level(H)
     if not len(Entity.all):
         end_game(0)
          
@@ -226,6 +228,72 @@ def setup_walls(level):
             
         return i
             
+    def fingers(i):
+        for x in range(21, 24):
+            walls[i].draw(x, BOT_Y + 3)
+            i += 1
+        walls[i].draw(24, BOT_Y + 3)
+        i += 1
+        walls[i].draw(24, BOT_Y + 2)
+        i += 1
+        walls[i].draw(24, BOT_Y + 1)
+        i += 1
+        
+        for x in range(18, 15, -1):
+            walls[i].draw(x, TOP_Y - 3)
+            i += 1
+        walls[i].draw(15, TOP_Y - 3)
+        i += 1
+        walls[i].draw(15, TOP_Y - 2)
+        i += 1
+        walls[i].draw(15, TOP_Y - 1)
+        i += 1
+        
+        for y in range(16, 19):
+            walls[i].draw(LEFT_X - 3, y)
+            i += 1
+        walls[i].draw(LEFT_X - 3, BOT_Y + 3)
+        i += 1
+        walls[i].draw(LEFT_X - 2, BOT_Y + 3)
+        i += 1
+        walls[i].draw(LEFT_X - 1, BOT_Y + 3)
+        i += 1
+        
+        for y in range(12, 9, -1):
+            walls[i].draw(RIGHT_X + 3, y)
+            i += 1
+        walls[i].draw(RIGHT_X + 3, TOP_Y - 3)
+        i += 1
+        walls[i].draw(RIGHT_X + 2, TOP_Y - 3)
+        i += 1
+        walls[i].draw(RIGHT_X + 1, TOP_Y - 3)
+        i += 1
+        
+        return i
+        
+    def nails(i):
+        walls[i].draw(17, 20)
+        i += 1
+        walls[i].draw(17, 21)
+        i += 1
+        
+        walls[i].draw(26, 16)
+        i += 1
+        walls[i].draw(27, 16)
+        i += 1
+        
+        walls[i].draw(22, 8)
+        i += 1
+        walls[i].draw(22, 7)
+        i += 1
+        
+        walls[i].draw(13, 12)
+        i += 1
+        walls[i].draw(12, 12)
+        i += 1
+        
+        return i
+            
     def surround_spawn_point_1(i): 
         walls[i].draw(6, 1)
         i += 1
@@ -290,10 +358,50 @@ def setup_walls(level):
     
     if level == 1:
         i = arms(i)
-        i = surround_spawn_point_1(i)
+        # i = surround_spawn_point_1(i)
 
     if level == 2:
         i = boxhead(i)
         
     if level == 3:
         i = arms(i)
+        i = fingers(i)
+        i = nails(i)
+        
+def next_level(H):
+    # Already max level
+    if th.level == 3:
+        end_game(1)
+    
+    # Level up
+    th.level += 1
+    
+    # Add townhall
+    Building.all.insert(0, th)
+    
+    # Delete all troops
+    Entity.Barbarians.clear()
+    Entity.Archers.clear()
+    Entity.Balloons.clear()
+    
+    # Erase previous buildings
+    Building.walls.clear()
+    Building.all = [B for B in Building.all if B.name != "Wizard Tower"]
+    Building.all = [B for B in Building.all if B.name != "Cannon"]
+    Building.all = [B for B in Building.all if B.name != "Gold"]
+    
+    Defender.all = [D for D in Defender.all if D.health > 0]
+    Defender.cannons = [C for C in Defender.cannons if C.health > 0]
+    Defender.wizard_towers = [W for W in Defender.wizard_towers if W.health > 0]
+    
+    reset_canvas()
+        
+    init(H, th.level)
+    H.draw(4, 10)
+    
+    # Rebuild buildings
+    for B in Building.all:
+        B.alive = True
+        B.health = B.max_health
+        
+    

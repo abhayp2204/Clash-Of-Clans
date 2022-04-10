@@ -12,7 +12,6 @@ def hud(H, timesteps):
     BUFFER += Fore.BLUE + H.name + ": " + str(int(H.health)) + "*"*k + " "*(int(H.max_health/hu) - k)
     
     hu = 120
-    th = Building.all[0]
     t = 1 + int(th.health/hu) if th.alive else 0
     
     if th.alive:
@@ -21,12 +20,6 @@ def hud(H, timesteps):
         hu = 100
         w = 1 + int(W.health/hu) if W.alive else 0
         BUFFER += Fore.GREEN + "Witch: " + str(int(W.health)) + "*"*w + " "*(int(W.max_health/hu) - w)
-        
-    # for i in range(CANNON_NUM):
-    #     hu = 100
-    #     C = Defender.all[i]
-    #     c = 1 + int(C.health/hu) if C.alive else 0
-    #     BUFFER += C.color + "   Cannon " + str(i+1) + ": " + "*"*c + " "*(int(C.max_health/hu) - c)
         
     BUFFER += Fore.YELLOW + "   Buildings: " + str(len(Building.all))
     BUFFER += Fore.WHITE + "   Level: " + str(th.level)
@@ -43,8 +36,8 @@ def hud(H, timesteps):
 def footer():
     pass
     # print("Troops = ", Entity.all)
-    # print("Buildings = ", Building.all)
-    print("Message = ", th.message)
+    print("Buildings = ", Building.all)
+    # print("Message = ", th.health)
          
 def get_canvas(BUFFER):
     # Use buffer to avoid flickering

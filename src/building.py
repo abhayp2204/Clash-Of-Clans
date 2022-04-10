@@ -113,7 +113,6 @@ class Defender(Building):
     def fire(self, target):
         # Make sure that the building can attack the target
         if (self.land and target.land) or (self.air and target.air):
-            
             # Only attack target
             if self.aoe == 0:
                 if(target.alive):

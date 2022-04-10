@@ -5,7 +5,7 @@ from .spell import *
 from .util import *
 from .setup import *
 
-def input_handler(key, H, timesteps):
+def input_handler(key, H, level, timesteps):
     if key is None:
         return
     key = key.lower()
@@ -30,9 +30,15 @@ def input_handler(key, H, timesteps):
         
     # Attack
     if(key == " "):
-        H.attack()
+        if H.name == "Barbarian King":
+            H.attack()
+        if H.name == "Archer Queen":
+            H.attack(H.arrow_distance, H.aoe)
     if(key == "e"):
-        K.use_leviathan_axe()
+        if H.name == "Barbarian King":
+            H.use_leviathan_axe()
+        if H.name == "Archer Queen":
+            H.use_eagle_arrow()
         
     # Spells
     if(key == "r"):
@@ -46,7 +52,7 @@ def input_handler(key, H, timesteps):
         
     # Controls to spawn Barbarians
     if(key == "1"):
-        if(len(Entity.Barbarians) == MAX_BARBARIANS):
+        if(len(Entity.Barbarians) == MAX_BARBARIANS[level - 1]):
             return
         
         B = Entity("Barbarian", BARBARIAN_LETTERS, BARBARIAN_COLOR, BARBARIAN_SIZE, BARBARIAN_HEALTH, BARBARIAN_DAMAGE, BARBARIAN_SPEED, True, False)
@@ -55,7 +61,7 @@ def input_handler(key, H, timesteps):
         B.Y = SPAWN_POINT_A[1] + 1
         
     if(key == "2"):
-        if(len(Entity.Barbarians) == MAX_BARBARIANS):
+        if(len(Entity.Barbarians) == MAX_BARBARIANS[level - 1]):
             return
         
         B = Entity("Barbarian", BARBARIAN_LETTERS, BARBARIAN_COLOR, BARBARIAN_SIZE, BARBARIAN_HEALTH, BARBARIAN_DAMAGE, BARBARIAN_SPEED, True, False)
@@ -64,7 +70,7 @@ def input_handler(key, H, timesteps):
         B.Y = SPAWN_POINT_B[1]
         
     if(key == "3"):
-        if(len(Entity.Barbarians) == MAX_BARBARIANS):
+        if(len(Entity.Barbarians) == MAX_BARBARIANS[level - 1]):
             return
         
         B = Entity("Barbarian", BARBARIAN_LETTERS, BARBARIAN_COLOR, BARBARIAN_SIZE, BARBARIAN_HEALTH, BARBARIAN_DAMAGE, BARBARIAN_SPEED, True, False)
@@ -76,7 +82,7 @@ def input_handler(key, H, timesteps):
 
     # Controls to spawn Archers
     if(key == "4"):
-        if(len(Entity.Archers) == MAX_ARCHERS):
+        if(len(Entity.Archers) == MAX_ARCHERS[level - 1]):
             return
         
         A = Entity("Archer", ARCHER_LETTERS, ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED, True, False)
@@ -85,7 +91,7 @@ def input_handler(key, H, timesteps):
         A.Y = SPAWN_POINT_A[1] + 1
         
     if(key == "5"):
-        if(len(Entity.Archers) == MAX_ARCHERS):
+        if(len(Entity.Archers) == MAX_ARCHERS[level - 1]):
             return
         
         A = Entity("Archer", ARCHER_LETTERS, ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED, True, False)
@@ -94,7 +100,7 @@ def input_handler(key, H, timesteps):
         A.Y = SPAWN_POINT_B[1] + 1
     if(key == "6"):
         
-        if(len(Entity.Archers) == MAX_ARCHERS):
+        if(len(Entity.Archers) == MAX_ARCHERS[level - 1]):
             return
         
         A = Entity("Archer", ARCHER_LETTERS, ARCHER_COLOR, ARCHER_SIZE, ARCHER_HEALTH, ARCHER_DAMAGE, ARCHER_SPEED, True, False)
@@ -106,7 +112,7 @@ def input_handler(key, H, timesteps):
         
     # Controls to spawn Balloons
     if(key == "7"):
-        if(len(Entity.Balloons) == MAX_BALLOONS):
+        if(len(Entity.Balloons) == MAX_BALLOONS[level - 1]):
             return
         
         A = Entity("Balloon", BALLOON_LETTERS, BALLOON_COLOR, BALLOON_SIZE, BALLOON_HEALTH, BALLOON_DAMAGE, BALLOON_SPEED, BALLOON_LAND, BALLOON_AIR)
@@ -115,7 +121,7 @@ def input_handler(key, H, timesteps):
         A.Y = SPAWN_POINT_A[1] + 1
         
     if(key == "8"):
-        if(len(Entity.Balloons) == MAX_BALLOONS):
+        if(len(Entity.Balloons) == MAX_BALLOONS[level - 1]):
             return
         
         A = Entity("Balloon", BALLOON_LETTERS, BALLOON_COLOR, BALLOON_SIZE, BALLOON_HEALTH, BALLOON_DAMAGE, BALLOON_SPEED, BALLOON_LAND, BALLOON_AIR)
@@ -124,7 +130,7 @@ def input_handler(key, H, timesteps):
         A.Y = SPAWN_POINT_B[1] + 1
         
     if(key == "9"):
-        if(len(Entity.Balloons) == MAX_BALLOONS):
+        if(len(Entity.Balloons) == MAX_BALLOONS[level - 1]):
             return
         
         A = Entity("Balloon", BALLOON_LETTERS, BALLOON_COLOR, BALLOON_SIZE, BALLOON_HEALTH, BALLOON_DAMAGE, BALLOON_SPEED, BALLOON_LAND, BALLOON_AIR)
@@ -132,33 +138,18 @@ def input_handler(key, H, timesteps):
         A.X = SPAWN_POINT_C[0] + 2
         A.Y = SPAWN_POINT_C[1]
         
+    # Admin controlls
+    if key == "t":
+        th.alive = False
+        th.health = 0
     if key == "p":
-        # Level up
-        th.level += 1
-        
-        # Delete all troops
-        Entity.Barbarians.clear()
-        Entity.Archers.clear()
-        Entity.Balloons.clear()
-        
-        reset_canvas()
-            
-        init(H, th.level)
-        H.draw(4, 10)
-        
-        # Rebuild buildings
         for B in Building.all:
-            B.alive = True
-            B.health = B.max_health
-            
-        # Delete wizard towers and cannons
-        Building.all = [B for B in Building.all if B.name != "Wizard Tower"]
-        Building.all = [B for B in Building.all if B.name != "Cannon"]
-        Building.all = [B for B in Building.all if B.name != "Gold"]
-                
-            
-        th.message = str(Building.huts[0].X) + ", " + str(Building.huts[0].Y)
-
-        # Redraw huts
-        # for Ht in Building.huts:
-        #     Ht.draw(4, 12)
+            B.health = 0
+            B.alive = False
+        next_level(H)
+    if key == "u":
+        Defender.wizard_towers[0].health -= 300
+    if key == "i":
+        Defender.wizard_towers[1].health -= 300
+    if key == "o":
+        Defender.wizard_towers[2].health -= 300

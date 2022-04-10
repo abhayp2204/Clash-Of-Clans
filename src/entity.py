@@ -61,7 +61,7 @@ class Entity:
                 
         # char = (self.color + BLOCK) if self.alive else " "
         for i in range(self.size[0] * X_SCALE):
-            char = KING_BGCOLOR + Fore.BLACK + self.letters[i] + Back.RESET
+            char = KING_BGCOLOR + Fore.BLACK + self.letters[i] + Back.RESET + Fore.RESET
             CANVAS[self.Y][self.X + i] = char
                 
     def erase(self):
@@ -101,26 +101,11 @@ class Entity:
         if(not self.target_wall.alive):
             self.clearing_path = False
             
-        # Redraw the block under aerial troops
-        if self.air:
-            if len(PREV_BUILDING):
-                b = PREV_BUILDING[0]
-                if b.alive:
-                    for i in range(len(PREV)):
-                        for x in range(X_SCALE):
-                            CANVAS[b.Y][b.X + x] = PREV[i]
-            
-        # Targeting a building.Building
         if(self != W):
             if(target.X * X_SCALE > self.X):    
                 ch = CANVAS[self.Y][self.X + X_SCALE]
                 if self.air:
                     move_right()
-                    
-                    # Keep track of the block under aerial troops
-                    PREV.append(ch)
-                    PREV_X.append(self.X)
-                    PREV_Y.append(self.Y)
                 else:
                     if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                         move_right()
@@ -131,10 +116,6 @@ class Entity:
                 else:
                     if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                         move_left()
-                    
-            for b in building.Building.all:
-                if b.X == int(self.X/2) and b.Y == self.Y - 1:
-                    PREV_BUILDING.append(b)
                     
         # Targetting an Entity
         else:
@@ -147,7 +128,7 @@ class Entity:
                 if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                     move_left()
                 
-        # Targetting building.Building or Entity
+        # Targetting building or entity
         if(target.Y > self.Y):
             ch = CANVAS[self.Y + 1][self.X]
             if self.air:
@@ -164,11 +145,6 @@ class Entity:
             ch = CANVAS[self.Y - 1][self.X]
             if self.air:
                 move_up()
-                
-                # Keep track of the block under aerial troops
-                PREV.append(ch)
-                PREV_X.append(self.X)
-                PREV_Y.append(self.Y)
             else:
                 if(ch == " " or ch == BARBARIAN_COLOR + BLOCK):
                     move_up()
@@ -222,7 +198,7 @@ class Entity:
             self.damage = ARCHER_DAMAGE
             dist = dx**2 + dy**2
             
-            if(dist < 100):
+            if(dist < ARCHER_RANGE):
                 return True
             
         if(self.name == "Balloon"):
@@ -278,7 +254,7 @@ class User_Controlled_Entity(Entity):
                 
     def paint(self):
         for i in range(X_SCALE):
-            CANVAS[self.Y][self.X + i] = Back.BLUE + Fore.BLACK + self.letters[i] + Back.RESET
+            CANVAS[self.Y][self.X + i] = Back.BLUE + Fore.BLACK + self.letters[i] + Fore.RESET + Back.RESET
         
     def move_up(self):
         if not self.alive:
@@ -440,7 +416,7 @@ class King(User_Controlled_Entity):
                 untrap()
                 
 class Queen(User_Controlled_Entity):
-    def __init__(self, name: str, letters, color, size, max_health, damage, speed, land, air, aoe, arrow_distance):
+    def __init__(self, name: str, letters, color, size, max_health, damage, speed, land, air, aoe, arrow_distance, eagle_aoe, eagle_arrow_distance):
         # Inherit
         super().__init__(name, letters, color, size, max_health, damage, speed, land, air)
         
@@ -451,13 +427,15 @@ class Queen(User_Controlled_Entity):
         # Initialize
         self.aoe = aoe
         self.arrow_distance = arrow_distance
+        self.eagle_aoe = eagle_aoe
+        self.eagle_arrow_distance = eagle_arrow_distance
         
-    def attack(self):
+    def attack(self, distance, aoe):
         if(self.direction == NORTH):
             target_X = self.X
-            target_Y = self.Y - self.arrow_distance
+            target_Y = self.Y - distance
             
-            half = int(self.aoe / 2)
+            half = int(aoe / 2)
             
             for y in range(target_Y - half, target_Y + half + 1):
                 for x in range(target_X - half*X_SCALE, target_X + half*X_SCALE + 1):
@@ -469,9 +447,9 @@ class Queen(User_Controlled_Entity):
 
         if(self.direction == SOUTH):
             target_X = self.X
-            target_Y = self.Y + self.arrow_distance
+            target_Y = self.Y + distance
             
-            half = int(self.aoe / 2)
+            half = int(aoe / 2)
             
             for y in range(target_Y - half, target_Y + half + 1):
                 for x in range(target_X - half*X_SCALE, target_X + half*X_SCALE + 1):
@@ -482,10 +460,10 @@ class Queen(User_Controlled_Entity):
                                 B.health -= QUEEN_DAMAGE
                         
         if(self.direction == EAST):
-            target_X = self.X + (self.arrow_distance * X_SCALE)
+            target_X = self.X + (distance * X_SCALE)
             target_Y = self.Y
             
-            half = int(self.aoe / 2)
+            half = int(aoe / 2)
             
             for y in range(target_Y - half, target_Y + half + 1):
                 for x in range(target_X - half*X_SCALE, target_X + half*X_SCALE + 1):
@@ -496,10 +474,10 @@ class Queen(User_Controlled_Entity):
                                 B.health -= QUEEN_DAMAGE/2
                         
         if(self.direction == WEST):
-            target_X = self.X - (self.arrow_distance * X_SCALE)
+            target_X = self.X - (distance * X_SCALE)
             target_Y = self.Y
             
-            half = int(self.aoe / 2)
+            half = int(aoe / 2)
             
             for y in range(target_Y - half, target_Y + half + 1):
                 for x in range(target_X - half*X_SCALE, target_X + half*X_SCALE + 1):
@@ -508,7 +486,10 @@ class Queen(User_Controlled_Entity):
                         for B in building.Building.all:
                             if B.contains_cell(x, y):
                                 B.health -= QUEEN_DAMAGE
-                                
+                
+    def use_eagle_arrow(self):
+        self.attack(self.eagle_arrow_distance, self.eagle_aoe)
+                        
                                 
     
 K = King("Barbarian King",
@@ -534,7 +515,9 @@ Q = Queen("Archer Queen",
          True,
          False,
          QUEEN_AOE,
-         QUEEN_ARROW_DISTANCE)
+         QUEEN_ARROW_DISTANCE,
+         QUEEN_EAGLE_AOE,
+         QUEEN_EAGLE_ARROW_DISTANCE)
 
 
 W = Entity("Witch",
