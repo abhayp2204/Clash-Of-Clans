@@ -358,7 +358,7 @@ def setup_walls(level):
     
     if level == 1:
         i = arms(i)
-        # i = surround_spawn_point_1(i)
+        i = surround_spawn_point_1(i)
 
     if level == 2:
         i = boxhead(i)

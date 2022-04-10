@@ -80,7 +80,7 @@ HUT_SIZE = (1, 1)
 HUT_COLOR = Back.GREEN
 HUT_HEALTH = 200
 HUT_POSITIONS = [
-    (16, 10),
+    (6, 6),
     (15, 18),
     (23, 18),
     (24, 10),
