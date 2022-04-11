@@ -37,8 +37,7 @@ def footer():
     pass
     # print("Troops = ", Entity.all)
     # print("Buildings = ", Building.all)
-    if len(Entity.Archers):
-        print("Message = ", Entity.Archers[0].damage)
+    # print("Message = ", th.message)
          
 def get_canvas(BUFFER):
     # Use buffer to avoid flickering

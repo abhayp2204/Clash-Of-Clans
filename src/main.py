@@ -83,6 +83,15 @@ def handle_balloons(timesteps):
             Bl.attack_time = timesteps
             Bl.attack(target)
     
+def handle_eagle_arrow(H):
+    # H.active means the arrows are still in the air
+    if H.name == "Archer Queen" and H.active:
+        # Wait for the arrows to land (1 second later)
+        if time.time() - H.time >= QUEEN_POWER_ATTACK_TIME:
+            H.use_eagle_arrow()
+            H.active = False
+    th.message = H.num_power_attack
+    
 def handle_witch(H, F, L, timesteps):
     if not H.alive:
         end_game(0, F, L)
