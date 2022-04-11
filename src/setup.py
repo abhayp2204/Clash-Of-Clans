@@ -22,15 +22,13 @@ def init(H, level):
     th.draw(int((CENTER_X - TOWNHALL_SIZE[0])/X_SCALE), CENTER_Y - int(TOWNHALL_SIZE[1]/2))  
 
     # Huts
-    if(level == 1):
-        for i in range(0, NUM_HUTS):
-            Ht = Building("Hut", HUT_LETTERS, HUT_COLOR, HUT_SIZE, HUT_HEALTH)
-            Ht.draw(HUT_POSITIONS[i][0], HUT_POSITIONS[i][1])
-            
-    if(level == 2):
-        for Ht in Building.huts:
-            Ht.X = 4
-            Ht.Y = 12
+    for i in range(0, len(HUT_POSITIONS[th.level - 1])):
+        Ht = Building("Hut",
+                       HUT_LETTERS,
+                       HUT_COLOR,
+                       HUT_SIZE,
+                       HUT_HEALTH)
+        Ht.draw(HUT_POSITIONS[th.level - 1][i][0], HUT_POSITIONS[th.level - 1][i][1])
         
     # Wizard Towers
     for i in range(0, len(WIZARD_POSITIONS[th.level - 1])):
@@ -85,7 +83,7 @@ def init(H, level):
     H.draw(4, 10)
     H.health = H.max_health
 
-def select_hero():
+def select_hero(F, L):
     stars = 20
     lines = 2
     gap = 8
@@ -107,7 +105,7 @@ def select_hero():
         key = input_to(getch)
         if not key is None:
             key = key.lower()
-        n = select_hero_controls(key)
+        n = select_hero_controls(key, F, L)
         
         if n == 101:
             right = not right
@@ -117,22 +115,26 @@ def select_hero():
     H = Q if right else K
     return H
 
-def select_hero_controls(key):
+def select_hero_controls(key, F, L):
     if key == " ":
         return 101
     elif key == "c":
         return 102
     elif key == "q":
-        end_game(0)
+        end_game(0, F, L)
     
-def check_game_over(H):
+def check_game_over(H, F, L):
     if not len(Building.all) and not W.alive:
-        next_level(H)
+        next_level(H, F, L)
     if not len(Entity.all):
-        end_game(0)
+        end_game(0, F, L)
          
-def end_game(status):
+def end_game(status, F, L):
     # os.system("clear")
+    print()
+    print()
+    print()
+    
     if(status):
         print("█       █  █████   █    █        █           █  █████  ██       █")
         print(" █     █  ██   ██  █    █        █           █    █    █ █      █")
@@ -152,8 +154,15 @@ def end_game(status):
         print("    █      █   █   █    █        █         █   █        ██  █      ")
         print("    █      █████   ██████        ██████    █████    █████   ███████")
         
+    print()
+    print()
+    print()
+        
     show_cursor()
     os.system("stty echo")
+    
+    F.close()
+    L.close()
     
     exit()
     
@@ -358,7 +367,7 @@ def setup_walls(level):
     
     if level == 1:
         i = arms(i)
-        i = surround_spawn_point_1(i)
+        # i = surround_spawn_point_1(i)
 
     if level == 2:
         i = boxhead(i)
@@ -368,16 +377,23 @@ def setup_walls(level):
         i = fingers(i)
         i = nails(i)
         
-def next_level(H):
+def next_level(H, F, L):
     # Already max level
     if th.level == 3:
-        end_game(1)
+        end_game(1, F, L)
     
     # Level up
     th.level += 1
     
     # Add townhall
     Building.all.insert(0, th)
+    
+    # Replenish power attack
+    H.num_power_attack = H.max_power_attack
+    
+    # Replensih spells
+    Rage.number = NUM_RAGE_SPELLS
+    Heal.number = NUM_HEAL_SPELLS
     
     # Delete all troops
     Entity.Barbarians.clear()
@@ -386,13 +402,12 @@ def next_level(H):
     
     # Erase previous buildings
     Building.walls.clear()
-    Building.all = [B for B in Building.all if B.name != "Wizard Tower"]
-    Building.all = [B for B in Building.all if B.name != "Cannon"]
-    Building.all = [B for B in Building.all if B.name != "Gold"]
+    Building.all.clear()
+    Building.all.append(th)
     
-    Defender.all = [D for D in Defender.all if D.health > 0]
-    Defender.cannons = [C for C in Defender.cannons if C.health > 0]
-    Defender.wizard_towers = [W for W in Defender.wizard_towers if W.health > 0]
+    Defender.all.clear()
+    Defender.cannons.clear()
+    Defender.wizard_towers.clear()
     
     reset_canvas()
         

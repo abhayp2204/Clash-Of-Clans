@@ -5,14 +5,14 @@ from .spell import *
 from .util import *
 from .setup import *
 
-def input_handler(key, H, level, timesteps):
+def input_handler(key, H, level, F, L, timesteps):
     if key is None:
         return
     key = key.lower()
     
     # Game controls
     if key == "q":
-        end_game(0)
+        end_game(0, F, L)
         
     # Disable king controls when dead
     if not H.alive:
@@ -146,10 +146,8 @@ def input_handler(key, H, level, timesteps):
         for B in Building.all:
             B.health = 0
             B.alive = False
-        next_level(H)
+        next_level(H, F, L)
     if key == "u":
-        Defender.wizard_towers[0].health -= 300
-    if key == "i":
-        Defender.wizard_towers[1].health -= 300
-    if key == "o":
-        Defender.wizard_towers[2].health -= 300
+        for Ht in Building.huts:
+            Ht.health = 0
+            Ht.alive = False

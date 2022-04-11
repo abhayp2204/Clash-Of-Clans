@@ -14,18 +14,27 @@ from src.stats import *
 
 START_TIME = time.time()
 getch = Get()
-H = select_hero()
-init(H, 1)
 message = ""
 BUFFER = ""
 timesteps = 0
 
-print(Fore.RED + Back.WHITE + "K")
+# Paths
+cwd = Path.cwd()
+replays = str(cwd) + "/replays"
+path = str(cwd) + "/replays/replay.txt"
+length = str(cwd) + "/replays/len.txt"
+
+# Files
+F = open(path, "w")
+L = open(length, "w")
+
+H = select_hero(F, L)
+init(H, 1)
 
 while (True):
     # Controls
     key = input_to(getch)
-    input_handler(key, H, th.level, timesteps)
+    input_handler(key, H, th.level, F, L, timesteps)
     
     # Troops and buildings
     handle_barbarians(timesteps)
@@ -33,7 +42,7 @@ while (True):
     handle_balloons(timesteps)
     handle_cannons(H, timesteps)
     handle_wizard_towers(H, timesteps)
-    handle_witch(H, timesteps)
+    handle_witch(H, F, L, timesteps)
     grim_reaper()
     handle_buildings(timesteps)
     handle_aerial()
@@ -55,7 +64,10 @@ while (True):
     BUFFER = hud(H, timesteps)
     BUFFER = get_canvas(BUFFER)
     print(BUFFER)
-    check_game_over(H)
+    F.write(BUFFER)
+    L.write(str(len(BUFFER)) + "\n")
+    
+    check_game_over(H, F, L)
     footer()
     
     th.message = Building.all

@@ -1,12 +1,19 @@
 # Clash-Of-Clans
 
 ## Goal
-You play the Barbarian King who is raiding a village. Once every building has been destroyed, you win the game. You can summon barbarians to help you win this battle from any of the three spawn points in the village. The cannons will try and destroy all of your troops. If they are sucessful in doing so, you lose.
+There are 2 heros, the Barbarian King and the Archer Queen. You must select any one of these at the start of the game, and raid three villages, each of increasing difficulty. If you successfully raid all three villages, you win the game. You can summon barbarians, archers and balloons to help you win this battle. There are three spawn points at the corners of the base, from where your troops will spawn. Each base has cannons and wizard towers to help defend against your troops. So be ready with creative attack strategies, use your spells at the right time and lead your troop to victory!!
+
+## Barbarians
+The Barbarian is a menacing warrior, known for his fierceness in battle. Equipped with a sword and armour, he can deal as well as dish out damage. On their own, they may not amount to much, but as a unified army, they can be a force to be reckoned with.
+
+## Archers
+The archer is a ranged fighter and excels with the support of barbarians, who can absorb all the damage coming from the defensive troops. Use them strategically to make the best use of them.
+
+## Balloons
+The balloons are an absolute menace. Without a care for puny walls and buildings, they traverse the skies wrecking havoc on anything unfortunate enough to find themselves directly below them. The balloons will prioritorize defensive buildings in order to render the base completely vulnerable to any threats.
 
 ## Bonus
-The King can use a special power called the Leviathan Axe that damages allt troops within a certain radius. This damage is also applied across walls. This is also your best line of defence against the Witch.
-
-If you destroy the townhall, a trap is triggered and a cage surrounds you. The witch awakens, and destroys weak troops such as barbarians. In an epic battle between the Barbarian King and the Witch, if you emerge victorious, you win the game, provided all the other buildings are also destroyed.
+The Archer Queen's Eagle Arrow has been implemented.
 
 ## Controls
 
@@ -20,10 +27,18 @@ D - Move right
 Space - Sword
 E     - Leviathan axe
 
-### Spawn barbarians
-1 - Spawn troops from spawn point 1
-2 - Spawn troops from spawn point 2
-3 - Spawn troops from spawn point 3
+### Spawn Troops
+1 - Spawn barbarians from spawn point 1
+2 - Spawn barbarians from spawn point 2
+3 - Spawn barbarians from spawn point 3
+
+4 - Spawn archers from spawn point 1
+5 - Spawn archers from spawn point 2
+6 - Spawn archers from spawn point 3
+
+7 - Spawn balloons from spawn point 1
+8 - Spawn balloons from spawn point 2
+9 - Spawn balloons from spawn point 3
 
 ### Spells
 R - Rage spell
@@ -33,3 +48,4 @@ H - Heal spell
 - Download the file and extract it into a directory
 - cd into that directory
 - run game.py to play
+- run replay.py to view the last played game

@@ -241,12 +241,14 @@ class Entity:
         return f"{self.name}"
     
 class User_Controlled_Entity(Entity):
-    def __init__(self, name: str, letters, color, size, max_health, damage, speed, land, air):
+    def __init__(self, name: str, letters, color, size, max_health, damage, speed, land, air, num_power_attack):
         # Inherit
         super().__init__(name, letters, color, size, max_health, damage, speed, land, air)
         
         # Initialize
         self.direction = EAST
+        self.max_power_attack = num_power_attack
+        self.num_power_attack = num_power_attack
         
     def clear(self):
         for i in range(X_SCALE):
@@ -315,9 +317,9 @@ class User_Controlled_Entity(Entity):
         return True
     
 class King(User_Controlled_Entity):
-    def __init__(self, name: str, letters, color, size, max_health, damage, speed, land, air, axe_damage, axe_area):
+    def __init__(self, name: str, letters, color, size, max_health, damage, speed, land, air, num_power_attack, axe_damage, axe_area):
         # Inherit
-        super().__init__(name, letters, color, size, max_health, damage, speed, land, air)
+        super().__init__(name, letters, color, size, max_health, damage, speed, land, air, num_power_attack)
         
         # Validate
         assert axe_damage > 0, f"Damage {axe_damage} must be > 0"
@@ -385,6 +387,11 @@ class King(User_Controlled_Entity):
                         w.health -= KING_DAMAGE
                 
     def use_leviathan_axe(self):
+        if self.num_power_attack == 0:
+            return
+        
+        self.num_power_attack -= 1    
+    
         for b in building.Building.all:
             x_pass = False
             y_pass = False
@@ -416,9 +423,9 @@ class King(User_Controlled_Entity):
                 untrap()
                 
 class Queen(User_Controlled_Entity):
-    def __init__(self, name: str, letters, color, size, max_health, damage, speed, land, air, aoe, arrow_distance, eagle_aoe, eagle_arrow_distance):
+    def __init__(self, name: str, letters, color, size, max_health, damage, speed, land, air, num_power_attack, aoe, arrow_distance, eagle_aoe, eagle_arrow_distance):
         # Inherit
-        super().__init__(name, letters, color, size, max_health, damage, speed, land, air)
+        super().__init__(name, letters, color, size, max_health, damage, speed, land, air, num_power_attack)
         
         # Validate
         assert aoe > 0, f"Damage {aoe} must be > 0"
@@ -488,7 +495,13 @@ class Queen(User_Controlled_Entity):
                                 B.health -= QUEEN_DAMAGE
                 
     def use_eagle_arrow(self):
+        if self.num_power_attack == 0:
+            return
+        
+        self.num_power_attack -= 1
+        
         self.attack(self.eagle_arrow_distance, self.eagle_aoe)
+        self.num_power_attack 
                         
                                 
     
@@ -501,6 +514,7 @@ K = King("Barbarian King",
          KING_SPEED,
          True,
          False,
+         KING_NUM_POWER_ATTACK,
          KING_AXE_DAMAGE,
          KING_AXE_AREA)
 
@@ -514,6 +528,7 @@ Q = Queen("Archer Queen",
          QUEEN_SPEED,
          True,
          False,
+         QUEEN_NUM_POWER_ATTACK,
          QUEEN_AOE,
          QUEEN_ARROW_DISTANCE,
          QUEEN_EAGLE_AOE,

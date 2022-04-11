@@ -83,9 +83,9 @@ def handle_balloons(timesteps):
             Bl.attack_time = timesteps
             Bl.attack(target)
     
-def handle_witch(H, timesteps):
+def handle_witch(H, F, L, timesteps):
     if not H.alive:
-        end_game(0)
+        end_game(0, F, L)
     
     W.damage = WITCH_DAMAGE
     if not W.alive:

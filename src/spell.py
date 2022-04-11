@@ -21,13 +21,13 @@ class Spell:
         self.time = timesteps
         self.active = True
         
-        for troop in Entity.all:
-            troop.health *= self.health_boost
-            if(troop.health > troop.max_health):
-                troop.health = troop.max_health
+        for E in Entity.all:
+            E.health *= self.health_boost
+            if(E.health > E.max_health):
+                E.health = E.max_health
                 
-            troop.damage *= self.damage_boost
-            troop.speed *= self.speed_boost
+            E.damage *= self.damage_boost
+            E.speed *= self.speed_boost
             
     def reset(self):
         self.active = False

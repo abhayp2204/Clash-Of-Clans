@@ -7,6 +7,7 @@ def exit_game():
     show_cursor()
     os.system("stty echo")
     print(message)
+    F.close()
     
 def reset_canvas():
     for y in range(CANVAS_HEIGHT):
