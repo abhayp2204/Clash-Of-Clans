@@ -28,10 +28,10 @@ The Archer Queen's Eagle Arrow has been implemented.
 ## Controls
 
 ### Movement
-W - Move up
-A - Move left
-S - Move down
-D - Move right
+W - Move up  
+A - Move left  
+S - Move down  
+D - Move right  
 
 ### Attack
 
