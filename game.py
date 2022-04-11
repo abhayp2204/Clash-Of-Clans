@@ -47,6 +47,9 @@ while (True):
     handle_buildings(timesteps)
     handle_aerial()
     
+    if H.name == "Archer Queen" and H.active:
+        if time.time() - H.time >= 1:
+            H.use_eagle_arrow()
     
     # Timesteps
     current_time = time.time()

@@ -38,7 +38,9 @@ def input_handler(key, H, level, F, L, timesteps):
         if H.name == "Barbarian King":
             H.use_leviathan_axe()
         if H.name == "Archer Queen":
-            H.use_eagle_arrow()
+            if not H.active:
+                H.active = True
+                H.time = time.time()
         
     # Spells
     if(key == "r"):

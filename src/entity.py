@@ -436,6 +436,8 @@ class Queen(User_Controlled_Entity):
         self.arrow_distance = arrow_distance
         self.eagle_aoe = eagle_aoe
         self.eagle_arrow_distance = eagle_arrow_distance
+        self.time = 0
+        self.active = False
         
     def attack(self, distance, aoe):
         if(self.direction == NORTH):
@@ -497,7 +499,6 @@ class Queen(User_Controlled_Entity):
     def use_eagle_arrow(self):
         if self.num_power_attack == 0:
             return
-        
         self.num_power_attack -= 1
         
         self.attack(self.eagle_arrow_distance, self.eagle_aoe)

@@ -14,6 +14,14 @@ The archer is a ranged fighter and excels with the support of barbarians, who ca
 ### Balloons
 The balloons are an absolute menace. Without a care for puny walls and buildings, they traverse the skies wrecking havoc on anything unfortunate enough to find themselves directly below them. The balloons will prioritorize defensive buildings in order to render the base completely vulnerable to any threats.
 
+## Defenses
+
+### Cannons
+Cannons are defensive buildings that can attack only land troops. Therefore, they are completely useless against balloons.
+
+### Wizard Towers
+Wizard towers dish out lighning bolts that have an area of effect. They are extemely effective against troops that crowd into one place. In some lucky scenarios, they may destroy 9 troops in a single attack.
+
 ## Bonus
 The Archer Queen's Eagle Arrow has been implemented.
 
@@ -26,8 +34,14 @@ S - Move down
 D - Move right
 
 ### Attack
+
+## Barbarin King
 Space - Sword
 E     - Leviathan axe
+
+## Archer Queen
+Space - Arrows
+E     - Eagle Arrow
 
 ### Spawn Troops
 1 - Spawn barbarians from spawn point 1
