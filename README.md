@@ -3,13 +3,15 @@
 ## Goal
 There are 2 heros, the Barbarian King and the Archer Queen. You must select any one of these at the start of the game, and raid three villages, each of increasing difficulty. If you successfully raid all three villages, you win the game. You can summon barbarians, archers and balloons to help you win this battle. There are three spawn points at the corners of the base, from where your troops will spawn. Each base has cannons and wizard towers to help defend against your troops. So be ready with creative attack strategies, use your spells at the right time and lead your troop to victory!!
 
-## Barbarians
+## Troops
+
+### Barbarians
 The Barbarian is a menacing warrior, known for his fierceness in battle. Equipped with a sword and armour, he can deal as well as dish out damage. On their own, they may not amount to much, but as a unified army, they can be a force to be reckoned with.
 
-## Archers
+### Archers
 The archer is a ranged fighter and excels with the support of barbarians, who can absorb all the damage coming from the defensive troops. Use them strategically to make the best use of them.
 
-## Balloons
+### Balloons
 The balloons are an absolute menace. Without a care for puny walls and buildings, they traverse the skies wrecking havoc on anything unfortunate enough to find themselves directly below them. The balloons will prioritorize defensive buildings in order to render the base completely vulnerable to any threats.
 
 ## Bonus
