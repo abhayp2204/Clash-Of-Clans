@@ -36,25 +36,25 @@ D - Move right
 ### Attack
 
 ## Barbarin King
-Space - Sword
-E     - Leviathan axe
+Space - Sword  
+E     - Leviathan axe  
 
 ## Archer Queen
-Space - Arrows
-E     - Eagle Arrow
+Space - Arrows  
+E     - Eagle Arrow  
 
 ### Spawn Troops
-1 - Spawn barbarians from spawn point 1
-2 - Spawn barbarians from spawn point 2
-3 - Spawn barbarians from spawn point 3
-
-4 - Spawn archers from spawn point 1
-5 - Spawn archers from spawn point 2
-6 - Spawn archers from spawn point 3
-
-7 - Spawn balloons from spawn point 1
-8 - Spawn balloons from spawn point 2
-9 - Spawn balloons from spawn point 3
+1 - Spawn barbarians from spawn point 1  
+2 - Spawn barbarians from spawn point 2  
+3 - Spawn barbarians from spawn point 3  
+  
+4 - Spawn archers from spawn point 1  
+5 - Spawn archers from spawn point 2  
+6 - Spawn archers from spawn point 3  
+  
+7 - Spawn balloons from spawn point 1  
+8 - Spawn balloons from spawn point 2  
+9 - Spawn balloons from spawn point 3  
 
 ### Spells
 R - Rage spell
